@@ -1,3 +1,88 @@
-body {
-  background-color: #ffff00;
+.wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 70%;
+  height: 100vh;
+  background-color: #f7e600;
+  border: 3px solid #3a1d1d;
+  border-radius: 10px;
+}
+
+.main {
+  margin-bottom: 30px;
+}
+
+.main-icon {
+  font-size: 50px;
+  color: #3a1d1d;
+  background-color: #f7e600;
+  margin-right: 10px;
+  vertical-align: top;
+}
+
+.main-title {
+  display: inline-block;
+  font-size: 40px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+.login-form input {
+  margin: 10px 0;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #3a1d1d;
+  background-color: #f7e600;
+  font-size: 20px;
+}
+
+.login-form input:focus {
+  border-bottom-color: #000000;
+}
+
+button {
+  width: 80px;
+  height: 50px;
+  border: none;
+  border-radius: 5px;
+  background-color: #3a1d1d;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  align-self: flex-end;
+}
+
+button:hover {
+  background-color: #000000;
+}
+
+hr {
+  width: 30%;
+  margin: 20px auto;
+  border-color: #3a1d1d;
+}
+
+.register-box,
+.find-pw {
+  width: 30%;
+  margin-bottom: 20px;
+}
+
+p {
+  display: inline-block;
+  font-size: 20px;
+  padding-top: 15px;
+}
+
+.register-btn,
+.pw-btn {
+  float: right;
 }

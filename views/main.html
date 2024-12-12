@@ -4,10 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cocoa Talk</title>
-    <link rel="stylesheet" href="normalize.css" />
-    <link rel="stylesheet" href="main.css" />
+    <script
+      src="https://kit.fontawesome.com/a99ca2fd10.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jua&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/normalize.css" />
+    <link rel="stylesheet" href="/main.css" />
   </head>
   <body>
-    <!-- <h1 style="text-align: center">{{ title }}</h1> -->
+    <div class="wrap">
+      <div class="main">
+        <i class="fa-solid fa-comment-sms main-icon"></i>
+        <h1 class="main-title">{{ title }}</h1>
+      </div>
+      <form action="/login" method="POST" class="login-form">
+        <input
+          type="text"
+          name="id"
+          required
+          placeholder="아이디를 입력하세요"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="비밀번호를 입력하세요"
+        />
+        <button type="submit" class="login-btn">로그인</button>
+      </form>
+      <hr />
+      <div class="register-box">
+        <p>코코아톡이 처음이신가요? -></p>
+        <button type="button" class="register-btn">회원가입</button>
+      </div>
+      <div class="find-pw">
+        <p>비밀번호를 잊으셨나요? -></p>
+        <button type="button" class="pw-btn">비밀번호<br />찾기</button>
+      </div>
+    </div>
   </body>
 </html>
