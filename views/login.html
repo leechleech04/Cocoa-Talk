@@ -19,7 +19,7 @@
         <i class="fa-solid fa-comment-sms main-icon"></i>
         <h1 class="main-title">Cocoa Talk</h1>
       </div>
-      <form class="login-form" method="POST" action="/login">
+      <form class="login-form">
         <input
           type="text"
           name="id"
@@ -33,6 +33,9 @@
         />
         <button type="submit" class="login-btn">로그인</button>
       </form>
+      <div class="error-box">
+        <p class="error" style="display: none"></p>
+      </div>
       <hr />
       <div class="register-box">
         <p>코코아톡이 처음이신가요? -></p>
@@ -46,6 +49,28 @@
   </body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $('.login-form').on('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      axios
+        .post('/login', {
+          id: formData.get('id'),
+          password: formData.get('password'),
+        })
+        .then((res) => {
+          if (res.data.result) {
+            location.href = res.data.url;
+          } else {
+            $('.error').text(`* ${res.data.msg} *`);
+            $('.error').css('display', 'block');
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+  </script>
   <script
     src="https://kit.fontawesome.com/a99ca2fd10.js"
     crossorigin="anonymous"

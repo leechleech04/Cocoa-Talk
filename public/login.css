@@ -76,7 +76,8 @@ hr {
   margin-bottom: 20px;
 }
 
-p {
+.register-box p,
+.find-pw p {
   display: inline-block;
   font-size: 20px;
   padding-top: 15px;
@@ -85,4 +86,14 @@ p {
 .register-btn,
 .pw-btn {
   float: right;
+}
+
+.error-box {
+  width: 30%;
+}
+
+.error {
+  margin-top: 10px;
+  color: red;
+  font-size: 20px;
 }

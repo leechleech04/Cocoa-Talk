@@ -68,12 +68,12 @@ passport.use(
     async (id, password, done) => {
       let result = await User.findOne({ id });
       if (!result) {
-        return done(null, false, { message: '존재하지 않는 사용자입니다.' });
+        return done(null, false, { message: '존재하지 않는 아이디입니다.' });
       }
       if (result.password == password) {
         return done(null, result);
       } else {
-        return done(null, false, { message: '비밀번호가 틀렸습니다.' });
+        return done(null, false, { message: '비밀번호가 옳지 않습니다.' });
       }
     }
   )
@@ -109,16 +109,16 @@ app.get('/login', async (req, res) => {
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', (error, user, info) => {
     if (error) {
-      return res.status(500).json(error);
+      return next(error);
     }
     if (!user) {
-      return res.status(401).json(info.message);
+      return res.json({ msg: info.message, result: false });
     }
     req.logIn(user, (err) => {
       if (err) {
         return next(err);
       }
-      res.redirect('/');
+      return res.status(200).json({ url: '/', result: true });
     });
   })(req, res, next);
 });
@@ -130,6 +130,7 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  console.error(err);
   res.locals.message = err.message;
   res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
   res.status(err.status || 500);
