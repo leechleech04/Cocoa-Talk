@@ -5,6 +5,11 @@ const session = require('express-session');
 const dotenv = require('dotenv');
 const path = require('path');
 const nunjucks = require('nunjucks');
+const mongoose = require('mongoose');
+const User = require('./schemas/user');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const axios = require('axios');
 
 dotenv.config();
 
@@ -17,11 +22,28 @@ nunjucks.configure('views', {
   watch: true,
 });
 
+const connectDB = mongoose
+  .connect(process.env.MONGO_URI, {
+    dbName: 'cocoatalk',
+  })
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.error(err));
+
+mongoose.connection.on('error', (error) => {
+  console.error('MongoDB connection error', error);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.error('MongoDB disconnected. Try to reconnect');
+  connectDB();
+});
+
 app.use(morgan('dev'));
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(passport.initialize());
 app.use(
   session({
     resave: false,
@@ -30,14 +52,75 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: false,
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     },
     name: 'session-cookie',
   })
 );
+app.use(passport.session());
+
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'id',
+      passwordField: 'password',
+    },
+    async (id, password, done) => {
+      let result = await User.findOne({ id });
+      if (!result) {
+        return done(null, false, { message: '존재하지 않는 사용자입니다.' });
+      }
+      if (result.password == password) {
+        return done(null, result);
+      } else {
+        return done(null, false, { message: '비밀번호가 틀렸습니다.' });
+      }
+    }
+  )
+);
+
+passport.serializeUser((user, done) => {
+  process.nextTick(() => {
+    done(null, { _id: user._id, userId: user.id, username: user.nickname });
+  });
+});
+
+passport.deserializeUser((user, done) => {
+  User.findById(user._id)
+    .then((user) => {
+      delete user.password;
+      done(null, user);
+    })
+    .catch((err) => done(err));
+});
 
 app.get('/', (req, res) => {
-  res.render('main', { title: 'Cocoa Talk' });
+  if (req.user) {
+    res.render('main', { user: req.user });
+  } else {
+    res.redirect('login');
+  }
+});
+
+app.get('/login', async (req, res) => {
+  res.render('login');
+});
+
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (error, user, info) => {
+    if (error) {
+      return res.status(500).json(error);
+    }
+    if (!user) {
+      return res.status(401).json(info.message);
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect('/');
+    });
+  })(req, res, next);
 });
 
 app.use((req, res, next) => {
