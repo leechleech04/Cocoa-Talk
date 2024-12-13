@@ -1,0 +1,110 @@
+{% extends 'layout.html' %} {% block style %}
+<link rel="stylesheet" href="/register.css" />
+{% endblock %} {% block content %}
+<form class="register-form">
+  <div class="id-box">
+    <input type="text" name="id" required placeholder="아이디를 입력하세요" />
+    <button type="button" class="duplication-btn" style="display: none">
+      중복 확인
+    </button>
+    <button type="button" class="duplication-disabled disabled-btn">
+      중복 확인
+    </button>
+  </div>
+  <input
+    type="text"
+    name="nickname"
+    required
+    placeholder="닉네임을 입력하세요"
+  />
+  <input type="password" name="password" placeholder="비밀번호를 입력하세요" />
+  <input
+    type="password"
+    name="password-confirm"
+    placeholder="비밀번호를 다시 입력하세요"
+  />
+  <button type="submit" class="register-btn" style="display: none">
+    회원가입
+  </button>
+  <button type="button" class="register-disabled disabled-btn">회원가입</button>
+</form>
+{% endblock %} {% block script %}
+<script>
+  let duplicationChecked = false;
+  const duplicationBtn = $('.duplication-btn');
+  const duplicationDisabled = $('.duplication-disabled');
+  const registerBtn = $('.register-btn');
+  const registerDisabled = $('.register-disabled');
+  $('.id-box input').on('input', (e) => {
+    duplicationChecked = false;
+    registerBtn.css('display', 'none');
+    registerDisabled.css('display', 'inline-block');
+    if (e.target.value.length === 0) {
+      duplicationBtn.css('display', 'none');
+      duplicationDisabled.css('display', 'inline-block');
+    } else {
+      duplicationBtn.css('display', 'inline-block');
+      duplicationDisabled.css('display', 'none');
+    }
+  });
+  duplicationBtn.on('click', (e) => {
+    if (e.target.disabled) {
+      return;
+    } else {
+      axios
+        .post('/duplication', { id: $('.id-box input').val() })
+        .then((res) => {
+          if (res.data.result) {
+            duplicationChecked = true;
+            registerBtn.css('display', 'inline-block');
+            registerDisabled.css('display', 'none');
+            alert('사용 가능한 아이디입니다.');
+          } else {
+            duplicationChecked = false;
+            registerBtn.css('display', 'none');
+            registerDisabled.css('display', 'inline-block');
+            alert('이미 사용중인 아이디입니다.');
+          }
+        });
+    }
+  });
+</script>
+<script>
+  const password = $('input[name="password"]');
+  const passwordConfirm = $('input[name="password-confirm"]');
+  const nickname = $('input[name="nickname"]');
+  let firstPassword = password.val();
+  let secondPassword = passwordConfirm.val();
+  let nicknameValue = nickname.val();
+  password.on('input', () => {
+    firstPassword = password.val();
+    secondPassword = passwordConfirm.val();
+    if (
+      firstPassword.length !== 0 &&
+      firstPassword == secondPassword &&
+      duplicationChecked
+    ) {
+      registerBtn.css('display', 'inline-block');
+      registerDisabled.css('display', 'none');
+    } else {
+      registerBtn.css('display', 'none');
+      registerDisabled.css('display', 'inline-block');
+    }
+  });
+  passwordConfirm.on('input', () => {
+    firstPassword = password.val();
+    secondPassword = passwordConfirm.val();
+    if (
+      firstPassword.length !== 0 &&
+      firstPassword == secondPassword &&
+      duplicationChecked
+    ) {
+      registerBtn.css('display', 'inline-block');
+      registerDisabled.css('display', 'none');
+    } else {
+      registerBtn.css('display', 'none');
+      registerDisabled.css('display', 'inline-block');
+    }
+  });
+</script>
+{% endblock %}

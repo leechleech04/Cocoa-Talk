@@ -123,6 +123,15 @@ app.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
+app.post('/duplication', async (req, res) => {
+  const result = await User.findOne({ id: req.body.id });
+  res.json({ result: result ? false : true });
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;

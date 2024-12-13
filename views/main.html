@@ -1,26 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cocoa Talk</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Jua&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/normalize.css" />
-    <link rel="stylesheet" href="/main.css" />
-  </head>
-  <body>
-    <h1>{{ user.id }}</h1>
-    <h1>{{ user.nickname }}</h1>
-  </body>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script
-    src="https://kit.fontawesome.com/a99ca2fd10.js"
-    crossorigin="anonymous"
-  ></script>
-</html>
+{% extends 'layout.html' %} {% block style %}
+<link rel="stylesheet" href="/main.css" />
+{% endblock %} {% block content %}
+<div class="greeting">
+  <p>{{user.username}}님, 반갑습니다.</p>
+</div>
+{% endblock %} {% block script %} {% endblock %}

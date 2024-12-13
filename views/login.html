@@ -1,79 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cocoa Talk</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Jua&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/normalize.css" />
-    <link rel="stylesheet" href="/login.css" />
-  </head>
-  <body>
-    <div class="wrap">
-      <div class="main">
-        <i class="fa-solid fa-comment-sms main-icon"></i>
-        <h1 class="main-title">Cocoa Talk</h1>
-      </div>
-      <form class="login-form">
-        <input
-          type="text"
-          name="id"
-          required
-          placeholder="아이디를 입력하세요"
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="비밀번호를 입력하세요"
-        />
-        <button type="submit" class="login-btn">로그인</button>
-      </form>
-      <div class="error-box">
-        <p class="error" style="display: none"></p>
-      </div>
-      <hr />
-      <div class="register-box">
-        <p>코코아톡이 처음이신가요? -></p>
-        <button type="button" class="register-btn">회원가입</button>
-      </div>
-      <div class="find-pw">
-        <p>비밀번호를 잊으셨나요? -></p>
-        <button type="button" class="pw-btn">비밀번호<br />찾기</button>
-      </div>
-    </div>
-  </body>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    $('.login-form').on('submit', (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      axios
-        .post('/login', {
-          id: formData.get('id'),
-          password: formData.get('password'),
-        })
-        .then((res) => {
-          if (res.data.result) {
-            location.href = res.data.url;
-          } else {
-            $('.error').text(`* ${res.data.msg} *`);
-            $('.error').css('display', 'block');
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    });
-  </script>
-  <script
-    src="https://kit.fontawesome.com/a99ca2fd10.js"
-    crossorigin="anonymous"
-  ></script>
-  <script></script>
-</html>
+{% extends 'layout.html' %} {% block style %}
+<link rel="stylesheet" href="/login.css" />
+{% endblock %} {% block content %}
+<form class="login-form">
+  <input type="text" name="id" required placeholder="아이디를 입력하세요" />
+  <input type="password" name="password" placeholder="비밀번호를 입력하세요" />
+  <button type="submit" class="login-btn">로그인</button>
+</form>
+<div class="error-box">
+  <p class="error" style="display: none"></p>
+</div>
+<hr />
+<div class="register-box">
+  <p>코코아톡이 처음이신가요? -></p>
+  <button type="button" class="register-btn">회원가입</button>
+</div>
+<div class="find-pw">
+  <p>비밀번호를 잊으셨나요? -></p>
+  <button type="button" class="pw-btn">비밀번호<br />찾기</button>
+</div>
+{% endblock %} {% block script %}
+<script>
+  $('.login-form').on('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    axios
+      .post('/login', {
+        id: formData.get('id'),
+        password: formData.get('password'),
+      })
+      .then((res) => {
+        if (res.data.result) {
+          location.href = res.data.url;
+        } else {
+          $('.error').text(`* ${res.data.msg} *`);
+          $('.error').css('display', 'block');
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  });
+</script>
+<script>
+  $('.register-btn').on('click', () => {
+    location.href = '/register';
+  });
+</script>
+{% endblock %}

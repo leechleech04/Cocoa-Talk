@@ -1,0 +1,37 @@
+.register-form {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+.register-form input {
+  margin: 10px 0;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #3a1d1d;
+  background-color: #f7e600;
+  font-size: 20px;
+}
+
+.register-form input:focus {
+  border-bottom-color: #000000;
+}
+
+div.id-box input {
+  width: 75%;
+}
+
+.duplication-btn,
+.register-btn {
+  float: right;
+}
+
+.disabled-btn {
+  float: right;
+  background-color: #646464;
+  cursor: default;
+}
+
+.disabled-btn:hover {
+  background-color: #646464;
+}
