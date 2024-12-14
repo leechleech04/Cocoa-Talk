@@ -8,9 +8,6 @@ const path = require('path');
 const nunjucks = require('nunjucks');
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const {
-  Types: { ObjectId },
-} = Schema;
 const User = require('./schemas/user');
 const Room = require('./schemas/room');
 const Chat = require('./schemas/chat');
@@ -86,6 +83,16 @@ io.use(wrap(sessionMiddleware));
 io.on('connection', (socket) => {
   const user = socket.request.session.passport.user;
   console.log('New client connected', user);
+  socket.on('chat', async (data) => {
+    const document = await Chat.create({
+      room: new mongoose.Types.ObjectId(data.roomId),
+      user: user._id,
+      content: data.message,
+    });
+    const re = await document.populate('room');
+    const result = await re.populate('user');
+    io.emit('chat', result);
+  });
   socket.on('disconnect', () => {
     console.log('Client disconnected', user);
   });
@@ -215,18 +222,15 @@ app.get('/room/:id', async (req, res) => {
   const room = await Room.findById(req.params.id)
     .populate('owner')
     .populate('users');
-  res.render('chat', { room });
-});
-
-app.get('room/:id', async (req, res) => {
-  const room = await Room.findById(req.params.id)
-    .populate('owner')
-    .populate('users');
-  if (room.users.includes(req.user._id)) {
-    const chats = await Chat.find({ room: new ObjectId(req.params.id) })
+  if (
+    room.users.some((user) => user._id.toString() === req.user._id.toString())
+  ) {
+    const chats = await Chat.find({
+      room: new mongoose.Types.ObjectId(req.params.id),
+    })
       .populate('room')
       .populate('user');
-    return res.render('chat', { room, chats });
+    return res.render('chat', { room, chats, user: req.user });
   } else {
     return res.redirect('/');
   }

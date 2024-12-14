@@ -4,81 +4,9 @@
 <div class="chat-box">
   <div class="chat-title"><h1>{{room.title}}</h1></div>
   <div class="chat-content">
-    <div class="other-msg">
-      <div class="msg-user"><p>시험용(test)</p></div>
-      <div class="content-createdAt">
-        <div class="msg-content"><p>나는 시험용</p></div>
-        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
-      </div>
-    </div>
+    {% for chat in chats %} {% if chat.user._id.toString() ==
+    user._id.toString() %}
     <div class="my-msg">
-      <div class="msg-user"><p>관리자(admin)</p></div>
-      <div class="content-createdAt">
-        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
-        <div class="msg-content"><p>나는 관리자</p></div>
-      </div>
-    </div>
-    <div class="my-msg">
-      <div class="msg-user"><p>관리자(admin)</p></div>
-      <div class="content-createdAt">
-        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
-        <div class="msg-content">
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique
-            error eligendi cupiditate obcaecati. Rerum aut similique laboriosam
-            neque placeat, hic magni, omnis quo corporis nemo sunt vitae ducimus
-            asperiores sequi?
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="other-msg">
-      <div class="msg-user"><p>시험용(test)</p></div>
-      <div class="content-createdAt">
-        <div class="msg-content">
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odio rem
-            velit similique doloribus totam facilis nemo, qui molestias,
-            suscipit, quaerat dolores nulla dolor tempora nostrum facere
-            obcaecati numquam ad debitis.
-          </p>
-        </div>
-        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
-      </div>
-    </div>
-    <div class="other-msg">
-      <div class="msg-user"><p>시험용(test)</p></div>
-      <div class="content-createdAt">
-        <div class="msg-content">
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odio rem
-            velit similique doloribus totam facilis nemo, qui molestias,
-            suscipit, quaerat dolores nulla dolor tempora nostrum facere
-            obcaecati numquam ad debitis.
-          </p>
-        </div>
-        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
-      </div>
-    </div>
-    <div class="other-msg">
-      <div class="msg-user"><p>시험용(test)</p></div>
-      <div class="content-createdAt">
-        <div class="msg-content">
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odio rem
-            velit similique doloribus totam facilis nemo, qui molestias,
-            suscipit, quaerat dolores nulla dolor tempora nostrum facere
-            obcaecati numquam ad debitis.
-          </p>
-        </div>
-        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
-      </div>
-    </div>
-    {% for chat in chats %} {% if chat.user_id == user._id %}
-    <div class="my-msg">
-      <div class="msg-user">
-        <p>{{chat.user.nickname}}({{chat.user.id}})</p>
-      </div>
       <div class="content-createdAt">
         <div class="msg-createdAt">
           <p>{{chat.createdAt.toLocaleTimeString('ko-KR')}}</p>
@@ -116,8 +44,50 @@
 </div>
 {% endblock %} {% block script %}
 <script>
+  const socket = io();
+</script>
+<script>
   $(document).ready(() => {
     $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
+    const roomId = '{{room._id}}';
+    $('.chat-form').on('submit', (e) => {
+      e.preventDefault();
+      const message = $('[name=message]').val();
+      $('[name=message]').val('');
+      socket.emit('chat', { message, roomId });
+    });
+    socket.on('chat', (data) => {
+      if (data.room._id.toString() == roomId.toString()) {
+        const contentCreatedAt = $('<div></div>').addClass('content-createdAt');
+        const msgCreatedAt = $('<div></div>').addClass('msg-createdAt');
+        msgCreatedAt.append(
+          $('<p></p>').text(
+            new Date(data.createdAt).toLocaleTimeString('ko-KR')
+          )
+        );
+        const msgContent = $('<div></div>').addClass('msg-content');
+        msgContent.append($('<p></p>').text(data.content));
+        if (data.user._id.toString() == '{{user._id}}') {
+          contentCreatedAt.append(msgCreatedAt);
+          contentCreatedAt.append(msgContent);
+          const myMsg = $('<div></div>').addClass('my-msg');
+          myMsg.append(contentCreatedAt);
+          $('.chat-content').append(myMsg);
+        } else {
+          const msgUser = $('<div></div>').addClass('msg-user');
+          msgUser.append(
+            $('<p></p>').text(`${data.user.nickname}(${data.user.id})`)
+          );
+          contentCreatedAt.append(msgContent);
+          contentCreatedAt.append(msgCreatedAt);
+          const otherMsg = $('<div></div>').addClass('other-msg');
+          otherMsg.append(msgUser);
+          otherMsg.append(contentCreatedAt);
+          $('.chat-content').append(otherMsg);
+        }
+        $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
+      }
+    });
   });
 </script>
 {% endblock %}
