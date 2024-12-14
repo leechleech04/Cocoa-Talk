@@ -10,6 +10,8 @@ const User = require('./schemas/user');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const axios = require('axios');
+const bcrypt = require('bcrypt');
+const MongoStore = require('connect-mongo');
 
 dotenv.config();
 
@@ -55,6 +57,10 @@ app.use(
       maxAge: 60 * 60 * 1000,
     },
     name: 'session-cookie',
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      dbName: 'cocoatalk',
+    }),
   })
 );
 app.use(passport.session());
@@ -70,7 +76,7 @@ passport.use(
       if (!result) {
         return done(null, false, { message: '존재하지 않는 아이디입니다.' });
       }
-      if (result.password == password) {
+      if (await bcrypt.compare(password, result.password)) {
         return done(null, result);
       } else {
         return done(null, false, { message: '비밀번호가 옳지 않습니다.' });
@@ -130,6 +136,24 @@ app.get('/register', (req, res) => {
 app.post('/duplication', async (req, res) => {
   const result = await User.findOne({ id: req.body.id });
   res.json({ result: result ? false : true });
+});
+
+app.post('/register', async (req, res) => {
+  if (
+    req.body.password.length === 0 &&
+    req.body.id.length === 0 &&
+    req.body.nickname.length === 0
+  ) {
+    res.json({ result: false });
+  } else {
+    const hashedPw = await bcrypt.hash(req.body.password, 10);
+    await User.create({
+      id: req.body.id,
+      password: hashedPw,
+      nickname: req.body.nickname,
+    });
+    res.json({ result: true });
+  }
 });
 
 app.use((req, res, next) => {

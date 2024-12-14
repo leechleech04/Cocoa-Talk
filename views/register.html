@@ -1,6 +1,15 @@
 {% extends 'layout.html' %} {% block style %}
 <link rel="stylesheet" href="/register.css" />
 {% endblock %} {% block content %}
+<div class="modal-bg" style="display: none">
+  <div class="modal-content">
+    <p>사용 가능한 아이디입니다.</p>
+    <button type="button" class="modal-btn">확인</button>
+    <button type="button" class="login-link" style="display: none">
+      로그인
+    </button>
+  </div>
+</div>
 <form class="register-form">
   <div class="id-box">
     <input type="text" name="id" required placeholder="아이디를 입력하세요" />
@@ -17,10 +26,16 @@
     required
     placeholder="닉네임을 입력하세요"
   />
-  <input type="password" name="password" placeholder="비밀번호를 입력하세요" />
+  <input
+    type="password"
+    name="password"
+    required
+    placeholder="비밀번호를 입력하세요"
+  />
   <input
     type="password"
     name="password-confirm"
+    required
     placeholder="비밀번호를 다시 입력하세요"
   />
   <button type="submit" class="register-btn" style="display: none">
@@ -47,6 +62,9 @@
       duplicationDisabled.css('display', 'none');
     }
   });
+  $('.modal-btn').on('click', () => {
+    $('.modal-bg').css('display', 'none');
+  });
   duplicationBtn.on('click', (e) => {
     if (e.target.disabled) {
       return;
@@ -58,12 +76,14 @@
             duplicationChecked = true;
             registerBtn.css('display', 'inline-block');
             registerDisabled.css('display', 'none');
-            alert('사용 가능한 아이디입니다.');
+            $('.modal-bg p').text('사용 가능한 아이디입니다.');
+            $('.modal-bg').css('display', 'flex');
           } else {
             duplicationChecked = false;
             registerBtn.css('display', 'none');
             registerDisabled.css('display', 'inline-block');
-            alert('이미 사용중인 아이디입니다.');
+            $('.modal-bg p').text('이미 사용중인 아이디입니다.');
+            $('.modal-bg').css('display', 'flex');
           }
         });
     }
@@ -105,6 +125,34 @@
       registerBtn.css('display', 'none');
       registerDisabled.css('display', 'inline-block');
     }
+  });
+</script>
+<script>
+  $('.login-link').on('click', () => {
+    location.href = '/login';
+  });
+  $('.register-form').on('submit', (e) => {
+    e.preventDefault();
+    axios
+      .post('/register', {
+        id: $('.id-box input').val(),
+        nickname: $('input[name="nickname"]').val(),
+        password: $('input[name="password"]').val(),
+      })
+      .then((res) => {
+        if (res.data.result) {
+          $('.modal-content p').text('회원가입에 성공했습니다.');
+          $('.modal-bg').css('display', 'flex');
+          $('.login-link').css('display', 'inline-block');
+          $('.modal-btn').css('display', 'none');
+        } else {
+          $('.modal-content p').text('회원가입에 실패했습니다.');
+          $('.modal-bg').css('display', 'flex');
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   });
 </script>
 {% endblock %}
