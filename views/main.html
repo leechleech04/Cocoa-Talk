@@ -1,7 +1,24 @@
 {% extends 'layout.html' %} {% block style %}
 <link rel="stylesheet" href="/main.css" />
 {% endblock %} {% block content %}
+<button class="logout-btn">로그아웃</button>
 <div class="greeting">
-  <p>{{user.username}}님, 반갑습니다.</p>
+  <p>{{user.nickname}}({{user.id}}) 님, 반갑습니다.</p>
 </div>
-{% endblock %} {% block script %} {% endblock %}
+<div></div>
+{% endblock %} {% block script %}
+<script>
+  $('.logout-btn').on('click', () => {
+    axios
+      .post('/logout')
+      .then((res) => {
+        if (res.data.success) {
+          location.href = '/login';
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  });
+</script>
+{% endblock %}

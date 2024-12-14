@@ -5,6 +5,10 @@
   font-family: 'Jua', sans-serif;
 }
 
+p {
+  font-size: 20px;
+}
+
 .wrap {
   display: flex;
   flex-direction: column;
@@ -16,10 +20,12 @@
   background-color: #f7e600;
   border: 3px solid #3a1d1d;
   border-radius: 10px;
+  position: relative;
 }
 
 .main {
   margin-bottom: 30px;
+  cursor: pointer;
 }
 
 .main-icon {

@@ -1,4 +1,5 @@
 const express = require('express');
+const app = express();
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -7,15 +8,20 @@ const path = require('path');
 const nunjucks = require('nunjucks');
 const mongoose = require('mongoose');
 const User = require('./schemas/user');
+const Room = require('./schemas/room');
+const Chat = require('./schemas/chat');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
 const MongoStore = require('connect-mongo');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+const server = createServer(app);
+const io = new Server(server);
 
 dotenv.config();
 
-const app = express();
 app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'html');
 
@@ -28,7 +34,12 @@ const connectDB = mongoose
   .connect(process.env.MONGO_URI, {
     dbName: 'cocoatalk',
   })
-  .then(() => console.log('MongoDB connected'))
+  .then(() => {
+    console.log('MongoDB connected');
+    server.listen(app.get('port'), () => {
+      console.log(app.get('port'), '번 포트에서 대기 중');
+    });
+  })
   .catch((err) => console.error(err));
 
 mongoose.connection.on('error', (error) => {
@@ -46,24 +57,38 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(passport.initialize());
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 60 * 60 * 1000,
-    },
-    name: 'session-cookie',
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI,
-      dbName: 'cocoatalk',
-    }),
-  })
-);
+const sessionMiddleware = session({
+  resave: false,
+  saveUninitialized: false,
+  secret: process.env.COOKIE_SECRET,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    maxAge: 60 * 60 * 1000,
+  },
+  name: 'session-cookie',
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    dbName: 'cocoatalk',
+  }),
+});
+app.use(sessionMiddleware);
 app.use(passport.session());
+
+const wrap = (middleware) => (socket, next) =>
+  middleware(socket.request, {}, next);
+io.use(wrap(sessionMiddleware));
+
+io.on('connection', (socket) => {
+  const user = socket.request.session.passport.user;
+  console.log('New client connected', user);
+  socket.on('disconnect', () => {
+    console.log('Client disconnected', user);
+  });
+  socket.on('error', (error) => {
+    console.error(error);
+  });
+});
 
 passport.use(
   new LocalStrategy(
@@ -91,17 +116,21 @@ passport.serializeUser((user, done) => {
   });
 });
 
-passport.deserializeUser((user, done) => {
-  User.findById(user._id)
-    .then((user) => {
-      delete user.password;
-      done(null, user);
-    })
-    .catch((err) => done(err));
+passport.deserializeUser(async (user, done) => {
+  try {
+    const result = await User.findById(user._id);
+    if (result) {
+      delete result.password;
+    }
+    done(null, result);
+  } catch {
+    (err) => done(err);
+  }
 });
 
 app.get('/', (req, res) => {
   if (req.user) {
+    console.log(req.user);
     res.render('main', { user: req.user });
   } else {
     res.redirect('login');
@@ -140,11 +169,13 @@ app.post('/duplication', async (req, res) => {
 
 app.post('/register', async (req, res) => {
   if (
-    req.body.password.length === 0 &&
-    req.body.id.length === 0 &&
-    req.body.nickname.length === 0
+    req.body.password.length === 0 ||
+    req.body.id.length === 0 ||
+    req.body.nickname.length === 0 ||
+    req.body.password !== req.body.secPassword
   ) {
-    res.json({ result: false });
+    console.log('회원가입에 실패했습니다.');
+    res.json({ msg: '회원가입에 실패했습니다.', result: false });
   } else {
     const hashedPw = await bcrypt.hash(req.body.password, 10);
     await User.create({
@@ -152,8 +183,19 @@ app.post('/register', async (req, res) => {
       password: hashedPw,
       nickname: req.body.nickname,
     });
-    res.json({ result: true });
+    console.log('회원가입에 성공했습니다.');
+    res.json({ msg: '회원가입에 성공했습니다.', result: true });
   }
+});
+
+app.post('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy();
+    res.json({ success: true });
+  });
 });
 
 app.use((req, res, next) => {
@@ -168,8 +210,4 @@ app.use((err, req, res, next) => {
   res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
   res.status(err.status || 500);
   res.render('error');
-});
-
-app.listen(app.get('port'), () => {
-  console.log(app.get('port'), '번 포트에서 대기 중');
 });

@@ -28,6 +28,12 @@
       src="https://kit.fontawesome.com/a99ca2fd10.js"
       crossorigin="anonymous"
     ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      $('.main').on('click', () => {
+        location.href = '/';
+      });
+    </script>
     {% block script %} {% endblock %}
   </body>
 </html>

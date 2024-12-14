@@ -22,7 +22,8 @@
     "morgan": "^1.10.0",
     "nunjucks": "^3.2.4",
     "passport": "^0.7.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
