@@ -14,3 +14,22 @@
 .room:hover {
   background-color: #ffffff;
 }
+
+.room h2 {
+  display: inline-block;
+}
+
+.room p {
+  margin-top: 10px;
+}
+
+.owner {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 18px;
+}
+
+.createdAt {
+  font-size: 16px;
+  color: #646464;
+}

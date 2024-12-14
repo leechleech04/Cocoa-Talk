@@ -1,0 +1,123 @@
+{% extends 'layout.html' %} {% block style %}
+<link rel="stylesheet" href="/chat.css" />
+{% endblock %} {% block content %}
+<div class="chat-box">
+  <div class="chat-title"><h1>{{room.title}}</h1></div>
+  <div class="chat-content">
+    <div class="other-msg">
+      <div class="msg-user"><p>시험용(test)</p></div>
+      <div class="content-createdAt">
+        <div class="msg-content"><p>나는 시험용</p></div>
+        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
+      </div>
+    </div>
+    <div class="my-msg">
+      <div class="msg-user"><p>관리자(admin)</p></div>
+      <div class="content-createdAt">
+        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
+        <div class="msg-content"><p>나는 관리자</p></div>
+      </div>
+    </div>
+    <div class="my-msg">
+      <div class="msg-user"><p>관리자(admin)</p></div>
+      <div class="content-createdAt">
+        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
+        <div class="msg-content">
+          <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique
+            error eligendi cupiditate obcaecati. Rerum aut similique laboriosam
+            neque placeat, hic magni, omnis quo corporis nemo sunt vitae ducimus
+            asperiores sequi?
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="other-msg">
+      <div class="msg-user"><p>시험용(test)</p></div>
+      <div class="content-createdAt">
+        <div class="msg-content">
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odio rem
+            velit similique doloribus totam facilis nemo, qui molestias,
+            suscipit, quaerat dolores nulla dolor tempora nostrum facere
+            obcaecati numquam ad debitis.
+          </p>
+        </div>
+        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
+      </div>
+    </div>
+    <div class="other-msg">
+      <div class="msg-user"><p>시험용(test)</p></div>
+      <div class="content-createdAt">
+        <div class="msg-content">
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odio rem
+            velit similique doloribus totam facilis nemo, qui molestias,
+            suscipit, quaerat dolores nulla dolor tempora nostrum facere
+            obcaecati numquam ad debitis.
+          </p>
+        </div>
+        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
+      </div>
+    </div>
+    <div class="other-msg">
+      <div class="msg-user"><p>시험용(test)</p></div>
+      <div class="content-createdAt">
+        <div class="msg-content">
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odio rem
+            velit similique doloribus totam facilis nemo, qui molestias,
+            suscipit, quaerat dolores nulla dolor tempora nostrum facere
+            obcaecati numquam ad debitis.
+          </p>
+        </div>
+        <div class="msg-createdAt"><p>오후 12:30:00</p></div>
+      </div>
+    </div>
+    {% for chat in chats %} {% if chat.user_id == user._id %}
+    <div class="my-msg">
+      <div class="msg-user">
+        <p>{{chat.user.nickname}}({{chat.user.id}})</p>
+      </div>
+      <div class="content-createdAt">
+        <div class="msg-createdAt">
+          <p>{{chat.createdAt.toLocaleTimeString('ko-KR')}}</p>
+        </div>
+        <div class="msg-content">
+          <p>{{chat.content}}</p>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="other-msg">
+      <div class="msg-user">
+        <p>{{chat.user.nickname}}({{chat.user.id}})</p>
+      </div>
+      <div class="content-createdAt">
+        <div class="msg-content">
+          <p>{{chat.content}}</p>
+        </div>
+        <div class="msg-createdAt">
+          <p>{{chat.createdAt.toLocaleTimeString('ko-KR')}}</p>
+        </div>
+      </div>
+    </div>
+    {% endif %} {% endfor %}
+  </div>
+  <form class="chat-form">
+    <input
+      type="text"
+      name="message"
+      placeholder="메시지를 입력하세요"
+      required
+    />
+    <button type="submit">전송</button>
+  </form>
+</div>
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(() => {
+    $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
+  });
+</script>
+{% endblock %}

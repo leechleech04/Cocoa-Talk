@@ -6,12 +6,14 @@
   {% for room in rooms %}
   <div class="room" data-id="{{room._id}}">
     <h2>{{room.title}}</h2>
-    <p>관리자: {{room.owner.nickname}}({{room.owner.id}})</p>
-    <p>
+    <p class="owner">관리자: {{room.owner.nickname}}({{room.owner.id}})</p>
+    <p class="users">
       인원: {% for user in room.users %} {{user.nickname}}({{user.id}}) {%
       endfor %}
     </p>
-    <p>생성 날짜: {{room.createdAt.toLocaleDateString('ko-KR')}}</p>
+    <p class="createdAt">
+      생성 날짜: {{room.createdAt.toLocaleDateString('ko-KR')}}
+    </p>
   </div>
   {% endfor %}
 </div>
