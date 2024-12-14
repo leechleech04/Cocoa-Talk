@@ -21,7 +21,7 @@ const chatSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(Date.now() + 9 * 60 * 60 * 1000),
+    default: Date.now,
   },
 });
 

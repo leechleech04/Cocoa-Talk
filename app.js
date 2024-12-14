@@ -20,6 +20,7 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const server = createServer(app);
 const io = new Server(server);
+const cors = require('cors');
 
 dotenv.config();
 
@@ -75,10 +76,18 @@ const sessionMiddleware = session({
 });
 app.use(sessionMiddleware);
 app.use(passport.session());
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
 io.use(wrap(sessionMiddleware));
+
+const room = io.of('/room');
+const chat = io.of('/chat');
 
 io.on('connection', (socket) => {
   const user = socket.request.session.passport.user;
@@ -210,11 +219,13 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/room-list/:id', async (req, res) => {
-  if (req.user._id == req.params.id) {
+  if (req.user && req.user._id == req.params.id) {
     const rooms = await Room.find({ users: req.params.id })
       .populate('owner')
       .populate('users');
     res.render('room-list', { rooms });
+  } else {
+    res.redirect('/');
   }
 });
 
@@ -223,6 +234,7 @@ app.get('/room/:id', async (req, res) => {
     .populate('owner')
     .populate('users');
   if (
+    req.user &&
     room.users.some((user) => user._id.toString() === req.user._id.toString())
   ) {
     const chats = await Chat.find({

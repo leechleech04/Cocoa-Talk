@@ -12,12 +12,16 @@
       endfor %}
     </p>
     <p class="createdAt">
-      생성 날짜: {{room.createdAt.toLocaleDateString('ko-KR')}}
+      생성 날짜: {{room.createdAt.toLocaleDateString('ko-KR', { timeZone:
+      'Asia/Seoul' })}}
     </p>
   </div>
   {% endfor %}
 </div>
 {% endblock %} {% block script %}
+<script>
+  const socket = io('/room');
+</script>
 <script>
   $(document).ready(() => {
     $('.room').on('click', (e) => {

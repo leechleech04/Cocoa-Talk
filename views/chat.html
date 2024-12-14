@@ -9,7 +9,10 @@
     <div class="my-msg">
       <div class="content-createdAt">
         <div class="msg-createdAt">
-          <p>{{chat.createdAt.toLocaleTimeString('ko-KR')}}</p>
+          <p>
+            {{chat.createdAt.toLocaleTimeString('ko-KR', { timeZone:
+            'Asia/Seoul' })}}
+          </p>
         </div>
         <div class="msg-content">
           <p>{{chat.content}}</p>
@@ -26,7 +29,10 @@
           <p>{{chat.content}}</p>
         </div>
         <div class="msg-createdAt">
-          <p>{{chat.createdAt.toLocaleTimeString('ko-KR')}}</p>
+          <p>
+            {{chat.createdAt.toLocaleTimeString('ko-KR', { timeZone:
+            'Asia/Seoul' })}}
+          </p>
         </div>
       </div>
     </div>
@@ -44,7 +50,7 @@
 </div>
 {% endblock %} {% block script %}
 <script>
-  const socket = io();
+  const socket = io('/chat');
 </script>
 <script>
   $(document).ready(() => {
@@ -62,7 +68,9 @@
         const msgCreatedAt = $('<div></div>').addClass('msg-createdAt');
         msgCreatedAt.append(
           $('<p></p>').text(
-            new Date(data.createdAt).toLocaleTimeString('ko-KR')
+            new Date(data.createdAt).toLocaleTimeString('ko-KR', {
+              timeZone: 'Asia/Seoul',
+            })
           )
         );
         const msgContent = $('<div></div>').addClass('msg-content');
