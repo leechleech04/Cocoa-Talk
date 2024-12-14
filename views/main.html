@@ -5,7 +5,11 @@
 <div class="greeting">
   <p>{{user.nickname}}({{user.id}}) 님, 반갑습니다.</p>
 </div>
-<div></div>
+<div class="menu">
+  <a href="/room-list/{{user._id}}">채팅방 목록</a>
+  <a href="/friend-list/{{user._id}}">친구 목록</a>
+  <a href="/profile/{{user._id}}">프로필</a>
+</div>
 {% endblock %} {% block script %}
 <script>
   $('.logout-btn').on('click', () => {

@@ -198,6 +198,13 @@ app.post('/logout', (req, res) => {
   });
 });
 
+app.get('/room-list/:id', async (req, res) => {
+  if (req.user._id == req.params.id) {
+    const rooms = await Room.find({ 'users.userId': req.params.id });
+    res.render('room-list', { rooms });
+  }
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;

@@ -14,6 +14,15 @@ const roomSchema = new Schema({
     required: true,
     ref: 'User',
   },
+  users: [
+    {
+      userId: { type: ObjectId, ref: 'User' },
+      joinedAt: {
+        type: Date,
+        default: new Date(Date.now() + 9 * 60 * 60 * 1000),
+      },
+    },
+  ],
   password: String,
   createdAt: {
     type: Date,
