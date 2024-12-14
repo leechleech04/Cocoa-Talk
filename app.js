@@ -200,7 +200,9 @@ app.post('/logout', (req, res) => {
 
 app.get('/room-list/:id', async (req, res) => {
   if (req.user._id == req.params.id) {
-    const rooms = await Room.find({ 'users.userId': req.params.id });
+    const rooms = await Room.find({ users: req.params.id })
+      .populate('owner')
+      .populate('users');
     res.render('room-list', { rooms });
   }
 });

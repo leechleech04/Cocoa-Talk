@@ -1,0 +1,16 @@
+.room-list {
+  width: 50%;
+  overflow-y: auto;
+}
+.room {
+  width: 100%;
+  border: 3px solid #3a1d1d;
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.room:hover {
+  background-color: #ffffff;
+}
