@@ -163,13 +163,15 @@
   transform: translateY(0px);
 }
 
-.room-exit-btn {
+.room-exit-btn,
+.room-delete-btn {
   width: 100px;
   background-color: #ff0000;
   margin-bottom: 20px;
 }
 
-.room-exit-btn:hover {
+.room-exit-btn:hover,
+.room-delete-btn:hover {
   background-color: #cc0000;
 }
 

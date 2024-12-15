@@ -281,7 +281,12 @@ app.get('/room/:id', async (req, res) => {
 
 app.post('/room-exit/:id', async (req, res) => {
   const room = await Room.findById(req.params.id);
-  
+  if (room.users.includes(req.user._id)) {
+    await room.updateOne({ $pull: { users: req.user._id } });
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
+  }
 });
 
 app.use((req, res, next) => {

@@ -57,9 +57,15 @@
   </form>
 </div>
 <div class="room-info">
+  {% if room.owner._id.toString() == user._id.toString() %}
+  <button type="button" class="room-delete-btn">
+    방 삭제 <i class="fa-solid fa-xmark"></i>
+  </button>
+  {% else %}
   <button type="button" class="room-exit-btn">
     방 나가기 <i class="fa-solid fa-arrow-right-from-bracket"></i>
   </button>
+  {% endif %}
   <p class="room-owner">
     채팅방 관리자: {{room.owner.nickname}} ({{room.owner.id}})
   </p>
@@ -139,10 +145,10 @@
         if (res.data.success) {
           location.href = '/room-list/{{user._id}}';
         } else {
-          alert(res.data.message);
+          location.href = '/login';
         }
       });
-    })
+    });
   });
 </script>
 {% endblock %}
