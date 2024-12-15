@@ -1,3 +1,58 @@
+.modal-bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: #64646464;
+  z-index: 10;
+}
+
+.title-modal {
+  border: 3px solid #3a1d1d;
+  border-radius: 10px;
+  background-color: #ffffff;
+  padding: 40px 40px;
+}
+
+.title-modal h1 {
+  text-align: center;
+}
+
+.title-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title-form input {
+  margin: 10px 0;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #3a1d1d;
+  font-size: 20px;
+  width: 300px;
+}
+
+.title-form input:focus {
+  border-bottom-color: #000000;
+}
+
+.btn-box {
+  width: 100%;
+  text-align: right;
+  margin-top: 10px;
+}
+
+.cancel-btn {
+  background-color: #646464;
+}
+
+.cancel-btn:hover {
+  background-color: #424242;
+}
+
 .chat-box {
   width: 70%;
   height: 85%;
@@ -184,7 +239,21 @@
   background-color: #cc0000;
 }
 
+.room-title {
+  font-size: 32px;
+}
+
+.put-title input {
+  font-size: 32px;
+  vertical-align: middle;
+}
+
+.fa-pencil {
+  cursor: pointer;
+}
+
 .room-owner {
+  margin-top: 10px;
   font-size: 22px;
 }
 

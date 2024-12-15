@@ -274,7 +274,7 @@ app.get('/room/:id', async (req, res) => {
       Chat.create({
         room: new mongoose.Types.ObjectId(req.params.id),
         user: req.user._id,
-        content: `${req.user.nickname}님이 입장하셨습니다.`,
+        content: `${req.user.nickname}(${req.user.id})님이 입장하셨습니다.`,
         notification: true,
       });
       const io = req.app.get('io');
@@ -363,6 +363,16 @@ app.post('/room-pw', async (req, res) => {
   const pw = req.body.password;
   const room = await Room.findById(id);
   if (await bcrypt.compare(pw, room.password)) {
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
+  }
+});
+
+app.put('/room-title/:id', async (req, res) => {
+  const room = await Room.findById(req.params.id);
+  if (room.owner.toString() === req.user._id.toString()) {
+    await room.updateOne({ title: req.body.title });
     res.json({ success: true });
   } else {
     res.json({ success: false });

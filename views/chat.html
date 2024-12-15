@@ -1,6 +1,17 @@
 {% extends 'layout.html' %} {% block style %}
 <link rel="stylesheet" href="/chat.css" />
 {% endblock %} {% block content %}
+<div class="modal-bg" style="display: none">
+  <div class="title-modal">
+    <form class="title-form">
+      <input type="text" name="title" value="{{room.title}}" required />
+      <div class="btn-box">
+        <button type="button" class="cancel-btn">취소</button>
+        <button type="submit">수정</button>
+      </div>
+    </form>
+  </div>
+</div>
 <div class="chat-box">
   <div class="chat-title">
     <a href="/room-list/{{user._id}}" class="room-list-link"
@@ -69,6 +80,12 @@
     방 나가기 <i class="fa-solid fa-arrow-right-from-bracket"></i>
   </button>
   {% endif %}
+  <p class="room-title">
+    채팅방 이름: {{room.title}} {% if room.owner._id.toString() ==
+    user._id.toString() %}
+    <i class="fa-solid fa-pencil"></i>
+    {% endif %}
+  </p>
   <p class="room-owner">
     채팅방 관리자: {{room.owner.nickname}} ({{room.owner.id}})
   </p>
@@ -143,6 +160,8 @@
     $('.room-exit-btn').on('click', () => {
       axios.post(`/room-exit/${roomId}`).then((res) => {
         if (res.data.success) {
+          const notification = $('<div></div>').addClass('notification');
+          $('.chat-content').append(notification);
           location.href = '/room-list/{{user._id}}';
         } else {
           location.href = '/login';
@@ -166,6 +185,29 @@
         )
       );
       $('.chat-content').append(notification);
+    });
+
+    $('.fa-pencil').on('click', () => {
+      $('.modal-bg').show();
+    });
+
+    $('.title-form').on('submit', (e) => {
+      e.preventDefault();
+      const title = $('[name=title]').val();
+      axios
+        .put(`/room-title/${roomId}`, { title })
+        .then((res) => {
+          if (res.data.success) {
+            $('.chat-title h1').text(title);
+            $('.room-title').text(`채팅방 이름: ${title}`);
+            $('.modal-bg').hide();
+          } else {
+            location.href = '/login';
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     });
   });
 </script>
