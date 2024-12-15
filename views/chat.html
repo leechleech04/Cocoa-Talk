@@ -1,12 +1,31 @@
 {% extends 'layout.html' %} {% block style %}
 <link rel="stylesheet" href="/chat.css" />
 {% endblock %} {% block content %}
-<div class="modal-bg" style="display: none">
+<div class="title-modal-bg" style="display: none">
   <div class="title-modal">
+    <h2>채팅방 이름 수정</h2>
     <form class="title-form">
       <input type="text" name="title" value="{{room.title}}" required />
       <div class="btn-box">
-        <button type="button" class="cancel-btn">취소</button>
+        <button type="button" class="title-cancel-btn">취소</button>
+        <button type="submit">수정</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="pw-modal-bg" style="display: none">
+  <div class="pw-modal">
+    <h2>채팅방 비밀번호 변경</h2>
+    <form class="pw-form">
+      <input
+        type="password"
+        name="oldPw"
+        placeholder="기존 비밀번호"
+        required
+      />
+      <input type="password" name="newPw" placeholder="새 비밀번호" required />
+      <div class="btn-box">
+        <button type="button" class="pw-cancel-btn">취소</button>
         <button type="submit">수정</button>
       </div>
     </form>
@@ -75,6 +94,7 @@
   <button type="button" class="room-delete-btn">
     방 삭제 <i class="fa-solid fa-xmark"></i>
   </button>
+  <button type="button" class="pw-put-btn">비밀번호 변경</button>
   {% else %}
   <button type="button" class="room-exit-btn">
     방 나가기 <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -195,11 +215,11 @@
     });
 
     $('.fa-pencil').on('click', () => {
-      $('.modal-bg').show();
+      $('.title-modal-bg').show();
     });
 
-    $('.cancel-btn').on('click', () => {
-      $('.modal-bg').hide();
+    $('.title-cancel-btn').on('click', () => {
+      $('.title-modal-bg').hide();
     });
 
     $('.title-form').on('submit', (e) => {
@@ -211,7 +231,7 @@
           if (res.data.success) {
             $('.chat-title h1').text(title);
             $('.room-title').text(`채팅방 이름: ${title}`);
-            $('.modal-bg').hide();
+            $('.title-modal-bg').hide();
           } else {
             location.href = '/login';
           }
@@ -219,6 +239,27 @@
         .catch((err) => {
           console.error(err);
         });
+    });
+
+    $('.pw-put-btn').on('click', () => {
+      $('.pw-modal-bg').show();
+    });
+
+    $('.pw-cancel-btn').on('click', () => {
+      $('.pw-modal-bg').hide();
+    });
+
+    $('.pw-form').on('submit', (e) => {
+      e.preventDefault();
+      const oldPw = $('[name=oldPw]').val();
+      const newPw = $('[name=newPw]').val();
+      axios.put(`/room-pw/${roomId}`, { oldPw, newPw }).then((res) => {
+        if (res.data.success) {
+          $('.pw-modal-bg').hide();
+        } else {
+          alert('기존 비밀번호가 일치하지 않습니다.');
+        }
+      });
     });
   });
 </script>

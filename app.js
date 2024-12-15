@@ -409,6 +409,21 @@ app.post('/search-user', async (req, res) => {
   res.render('search-user', { user: req.user, users: populatedResult });
 });
 
+app.put('/room-pw/:id', async (req, res) => {
+  if (req.user) {
+    const room = await Room.findById(req.params.id);
+    if (await bcrypt.compare(req.body.oldPw, room.password)) {
+      const hashed = await bcrypt.hash(req.body.newPw, 10);
+      await room.updateOne({ password: hashed });
+      res.json({ success: true });
+    } else {
+      res.json({ success: false });
+    }
+  } else {
+    res.redirect('/login');
+  }
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;

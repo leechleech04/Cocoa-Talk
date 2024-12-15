@@ -1,4 +1,5 @@
-.modal-bg {
+.title-modal-bg,
+.pw-modal-bg {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9,24 +10,23 @@
   z-index: 10;
 }
 
-.title-modal {
+.title-modal,
+.pw-modal {
   border: 3px solid #3a1d1d;
   border-radius: 10px;
   background-color: #ffffff;
   padding: 40px 40px;
 }
 
-.title-modal h1 {
-  text-align: center;
-}
-
-.title-form {
+.title-form,
+.pw-form {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.title-form input {
+.title-form input,
+.pw-form input {
   margin: 10px 0;
   border: none;
   outline: none;
@@ -35,7 +35,8 @@
   width: 300px;
 }
 
-.title-form input:focus {
+.title-form input:focus,
+.pw-form input:focus {
   border-bottom-color: #000000;
 }
 
@@ -45,11 +46,13 @@
   margin-top: 10px;
 }
 
-.cancel-btn {
+.title-cancel-btn,
+.pw-cancel-btn {
   background-color: #646464;
 }
 
-.cancel-btn:hover {
+.title-cancel-btn:hover,
+.pw-cancel-btn:hover {
   background-color: #424242;
 }
 
@@ -237,6 +240,16 @@
 .room-exit-btn:hover,
 .room-delete-btn:hover {
   background-color: #cc0000;
+}
+
+.pw-put-btn {
+  color: #000000;
+  width: 100px;
+  background-color: #f7e600;
+}
+
+.pw-put-btn:hover {
+  background-color: #e0d100;
 }
 
 .room-title {
