@@ -55,6 +55,7 @@
 <script>
   $(document).ready(() => {
     $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
+    socket.emit('join', {roomId: '{{room._id}}'});
     const roomId = '{{room._id}}';
     $('.chat-form').on('submit', (e) => {
       e.preventDefault();

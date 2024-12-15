@@ -86,12 +86,45 @@ const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
 io.use(wrap(sessionMiddleware));
 
-const room = io.of('/room');
-const chat = io.of('/chat');
+app.set('io', io);
+const roomNamespace = io.of('/room');
+roomNamespace.use(wrap(sessionMiddleware));
+const chatNamespace = io.of('/chat');
+chatNamespace.use(wrap(sessionMiddleware));
 
 io.on('connection', (socket) => {
   const user = socket.request.session.passport.user;
   console.log('New client connected', user);
+  socket.on('disconnect', () => {
+    console.log('Client disconnected', user);
+  });
+  socket.on('error', (error) => {
+    console.error(error);
+  });
+});
+
+roomNamespace.on('connection', (socket) => {
+  const user = socket.request.session.passport.user;
+  console.log('New client connected room namespace', user);
+  socket.on('disconnect', () => {
+    console.log('Client disconnected room namespace', user);
+  });
+  socket.on('error', (error) => {
+    console.error(error);
+  });
+});
+
+chatNamespace.on('connection', (socket) => {
+  const user = socket.request.session.passport.user;
+  console.log('New client connected on chat namespace', user);
+  socket.on('join', async (data) => {
+    const room = await Room.findById(data.roomId);
+    if (
+      room.users.some((one) => one._id.toString() === user._id.toString())
+    ) {
+      socket.join(data.roomId);
+    }
+  });
   socket.on('chat', async (data) => {
     const document = await Chat.create({
       room: new mongoose.Types.ObjectId(data.roomId),
@@ -100,10 +133,10 @@ io.on('connection', (socket) => {
     });
     const re = await document.populate('room');
     const result = await re.populate('user');
-    io.emit('chat', result);
+    chatNamespace.to(data.roomId).emit('chat', result);
   });
   socket.on('disconnect', () => {
-    console.log('Client disconnected', user);
+    console.log('Client disconnected on chat namespace', user);
   });
   socket.on('error', (error) => {
     console.error(error);
