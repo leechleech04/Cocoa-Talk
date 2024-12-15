@@ -198,6 +198,10 @@
       $('.modal-bg').show();
     });
 
+    $('.cancel-btn').on('click', () => {
+      $('.modal-bg').hide();
+    });
+
     $('.title-form').on('submit', (e) => {
       e.preventDefault();
       const title = $('[name=title]').val();

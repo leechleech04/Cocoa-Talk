@@ -1,0 +1,26 @@
+{% extends 'layout.html' %} {% block style %}
+<link rel="stylesheet" href="/search-user.css" />
+{% endblock %} {% block content %}
+<h1>유저 검색</h1>
+<form class="search-form" action="/search-user" method="POST">
+  <input
+    type="text"
+    name="userId"
+    placeholder="유저의 아이디를 정확히 입력해 주세요"
+    required
+  />
+  <button type="submit" class="search-btn">검색</button>
+</form>
+<div class="user-list">
+  {% for user in users %}
+  <div class="user">
+    <p class="nickname">닉네임: {{user.nickname}}</p>
+    <p class="id">ID: {{user.id}}</p>
+    <p class="createdAt">
+      가입 날짜: {{user.createdAt.toLocaleDateString('ko-KR', { timeZone:
+      'Asia/Seoul' })}}
+    </p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %} {% block script %} {% endblock %}

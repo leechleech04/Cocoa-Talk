@@ -387,6 +387,28 @@ app.put('/room-title/:id', async (req, res) => {
   }
 });
 
+app.get('/search-user', async (req, res) => {
+  const users = await User.find();
+  res.render('search-user', { user: req.user, users });
+});
+
+app.post('/search-user', async (req, res) => {
+  const searchOption = [
+    {
+      $search: {
+        index: 'user_id_search',
+        text: {
+          query: req.body.userId,
+          path: 'id',
+        },
+      },
+    },
+  ];
+  const result = await User.aggregate(searchOption);
+  const populatedResult = await User.populate(result, [{ path: 'friends' }]);
+  res.render('search-user', { user: req.user, users: populatedResult });
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;
