@@ -1,6 +1,23 @@
 {% extends 'layout.html' %} {% block style %}
 <link rel="stylesheet" href="/search-room.css" />
 {% endblock %} {% block content %}
+<div class="modal-bg" style="display: none">
+  <div class="pw-modal">
+    <h1 class="room-name"></h1>
+    <form class="pw-form">
+      <input
+        type="password"
+        name="password"
+        placeholder="채팅방 비밀번호를 입력하세요"
+        required
+      />
+      <div class="btn-box">
+        <button type="button" class="cancel-btn">취소</button>
+        <button type="submit">생성</button>
+      </div>
+    </form>
+  </div>
+</div>
 <h1>채팅방 검색</h1>
 <form class="search-form" action="/search-room" method="POST">
   <input type="text" name="roomName" placeholder="채팅방 이름" required />
@@ -9,6 +26,9 @@
 <div class="room-list">
   {% for room in rooms %}
   <div class="room" data-id="{{room._id}}">
+    {% if room.password %}
+    <i class="fa-solid fa-lock"></i>
+    {% endif %}
     <h2>{{room.title}}</h2>
     <p class="owner">관리자: {{room.owner.nickname}}({{room.owner.id}})</p>
     <p class="users">
@@ -22,4 +42,33 @@
   </div>
   {% endfor %}
 </div>
-{% endblock %} {% block script %} {% endblock %}
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(() => {
+    $('.room').on('click', (e) => {
+      if (e.currentTarget.querySelector('.fa-lock')) {
+        $('.room-name').text(e.currentTarget.querySelector('h2').textContent);
+        $('.modal-bg').css('display', 'flex');
+        $('.pw-form').data('id', e.currentTarget.dataset.id);
+      } else {
+        location.href = `/room/${e.currentTarget.dataset.id}`;
+      }
+    });
+    $('.cancel-btn').on('click', () => {
+      $('.modal-bg').hide();
+    });
+    $('.pw-form').on('submit', (e) => {
+      e.preventDefault();
+      const id = $('.pw-form').data('id');
+      const password = $('.pw-form input[name="password"]').val();
+      axios.post('/room-pw', { id, password }).then((res) => {
+        if (res.data.success) {
+          location.href = `/room/${id}`;
+        } else {
+          alert('비밀번호가 일치하지 않습니다.');
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

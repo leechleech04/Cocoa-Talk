@@ -264,10 +264,22 @@ app.get('/room/:id', async (req, res) => {
   const room = await Room.findById(req.params.id)
     .populate('owner')
     .populate('users');
-  if (
-    req.user &&
-    room.users.some((user) => user._id.toString() === req.user._id.toString())
-  ) {
+  if (req.user) {
+    if (
+      !room.users.some(
+        (user) => user._id.toString() === req.user._id.toString()
+      )
+    ) {
+      await room.updateOne({ $push: { users: req.user._id } });
+      Chat.create({
+        room: new mongoose.Types.ObjectId(req.params.id),
+        user: req.user._id,
+        content: `${req.user.nickname}님이 입장하셨습니다.`,
+        notification: true,
+      });
+      const io = req.app.get('io');
+      io.of('/chat').to(req.params.id).emit('room-enter', { user: req.user });
+    }
     const chats = await Chat.find({
       room: new mongoose.Types.ObjectId(req.params.id),
     })
@@ -344,6 +356,17 @@ app.post('/search-room', async (req, res) => {
     { path: 'users' },
   ]);
   res.render('search-room', { user: req.user, rooms: populatedResult });
+});
+
+app.post('/room-pw', async (req, res) => {
+  const id = req.body.id;
+  const pw = req.body.password;
+  const room = await Room.findById(id);
+  if (await bcrypt.compare(pw, room.password)) {
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
+  }
 });
 
 app.use((req, res, next) => {

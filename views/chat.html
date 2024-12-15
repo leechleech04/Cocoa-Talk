@@ -12,8 +12,11 @@
     </button>
   </div>
   <div class="chat-content">
-    {% for chat in chats %} {% if chat.user._id.toString() ==
-    user._id.toString() %}
+    {% for chat in chats %} {% if chat.notification %}
+    <div class="notification">
+      <p>{{chat.content}}</p>
+    </div>
+    {% elif chat.user._id.toString() == user._id.toString() %}
     <div class="my-msg">
       <div class="content-createdAt">
         <div class="msg-createdAt">
@@ -75,9 +78,6 @@
     <p class="room-user">{{user.nickname}} ({{user.id}})</p>
     {% endfor %}
   </div>
-  {% if room.password %}
-  <p class="room-pw">비밀번호: {{room.password}}</p>
-  {% endif %}
   <p class="room-created-at">
     방 생성날짜: {{room.createdAt.toLocaleDateString('ko-KR', { timeZone:
     'Asia/Seoul' })}}
@@ -157,6 +157,15 @@
           location.href = '/login';
         }
       });
+    });
+    socket.on('room-enter', (data) => {
+      const notification = $('<div></div>').addClass('notification');
+      notification.append(
+        $('<p></p>').text(
+          `${data.user.nickname}(${data.user.id})님이 입장하셨습니다.`
+        )
+      );
+      $('.chat-content').append(notification);
     });
   });
 </script>
