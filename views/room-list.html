@@ -2,6 +2,31 @@
 <link rel="stylesheet" href="/room-list.css" />
 {% endblock %} {% block content %}
 <h1>채팅방 목록</h1>
+<div class="create-btn-box">
+  <button type="button" class="create-btn">채팅방 생성</button>
+</div>
+<div class="modal-bg" style="display: none">
+  <div class="create-modal">
+    <h1>채팅방 생성</h1>
+    <form action="/create-room" method="POST" class="create-form">
+      <input
+        type="text"
+        name="title"
+        placeholder="채팅방 제목을 입력하세요"
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="채팅방 비밀번호를 입력하세요"
+      />
+      <div class="btn-box">
+        <button type="button" class="cancel-btn">취소</button>
+        <button type="submit">생성</button>
+      </div>
+    </form>
+  </div>
+</div>
 <div class="room-list">
   {% for room in rooms %}
   <div class="room" data-id="{{room._id}}">
@@ -26,6 +51,12 @@
   $(document).ready(() => {
     $('.room').on('click', (e) => {
       location.href = `/room/${e.currentTarget.dataset.id}`;
+    });
+    $('.create-btn').on('click', () => {
+      $('.modal-bg').css('display', 'flex');
+    });
+    $('.cancel-btn').on('click', () => {
+      $('.modal-bg').hide();
     });
   });
 </script>

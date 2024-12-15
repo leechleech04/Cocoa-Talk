@@ -303,6 +303,22 @@ app.delete('/room-delete/:id', async (req, res) => {
   }
 });
 
+app.post('/create-room', async (req, res) => {
+  if (req.user) {
+    const room = await Room.create({
+      title: req.body.title,
+      owner: req.user._id,
+      users: [req.user._id],
+    });
+    if (req.body.password) {
+      await room.updateOne({ password: req.body.password });
+    }
+    res.redirect(`/room/${room._id}`);
+  } else {
+    res.redirect('/login');
+  }
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;
