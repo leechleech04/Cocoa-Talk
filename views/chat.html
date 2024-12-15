@@ -160,8 +160,6 @@
     $('.room-exit-btn').on('click', () => {
       axios.post(`/room-exit/${roomId}`).then((res) => {
         if (res.data.success) {
-          const notification = $('<div></div>').addClass('notification');
-          $('.chat-content').append(notification);
           location.href = '/room-list/{{user._id}}';
         } else {
           location.href = '/login';
@@ -182,6 +180,15 @@
       notification.append(
         $('<p></p>').text(
           `${data.user.nickname}(${data.user.id})님이 입장하셨습니다.`
+        )
+      );
+      $('.chat-content').append(notification);
+    });
+    socket.on('room-exit', (data) => {
+      const notification = $('<div></div>').addClass('notification');
+      notification.append(
+        $('<p></p>').text(
+          `${data.user.nickname}(${data.user.id})님이 퇴장하셨습니다.`
         )
       );
       $('.chat-content').append(notification);

@@ -293,8 +293,16 @@ app.get('/room/:id', async (req, res) => {
 
 app.post('/room-exit/:id', async (req, res) => {
   const room = await Room.findById(req.params.id);
+  const io = req.app.get('io');
   if (room.users.includes(req.user._id)) {
+    io.of('/chat').to(req.params.id).emit('room-exit', { user: req.user });
     await room.updateOne({ $pull: { users: req.user._id } });
+    Chat.create({
+      room: new mongoose.Types.ObjectId(req.params.id),
+      user: req.user._id,
+      content: `${req.user.nickname}(${req.user.id})님이 퇴장하셨습니다.`,
+      notification: true,
+    });
     res.json({ success: true });
   } else {
     res.json({ success: false });
