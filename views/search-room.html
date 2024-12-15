@@ -1,0 +1,25 @@
+{% extends 'layout.html' %} {% block style %}
+<link rel="stylesheet" href="/search-room.css" />
+{% endblock %} {% block content %}
+<h1>채팅방 검색</h1>
+<form class="search-form" action="/search-room" method="POST">
+  <input type="text" name="roomName" placeholder="채팅방 이름" required />
+  <button type="submit" class="search-btn">검색</button>
+</form>
+<div class="room-list">
+  {% for room in rooms %}
+  <div class="room" data-id="{{room._id}}">
+    <h2>{{room.title}}</h2>
+    <p class="owner">관리자: {{room.owner.nickname}}({{room.owner.id}})</p>
+    <p class="users">
+      인원({{room.users.length}}): {% for user in room.users %}
+      {{user.nickname}}({{user.id}}) {% endfor %}
+    </p>
+    <p class="createdAt">
+      생성 날짜: {{room.createdAt.toLocaleDateString('ko-KR', { timeZone:
+      'Asia/Seoul' })}}
+    </p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %} {% block script %} {% endblock %}

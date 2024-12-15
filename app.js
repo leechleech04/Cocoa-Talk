@@ -322,8 +322,28 @@ app.get('/search-room', async (req, res) => {
     const rooms = await Room.find().populate('owner').populate('users');
     res.render('search-room', { user: req.user, rooms });
   } else {
-    res.redirect('login');
+    res.redirect('/login');
   }
+});
+
+app.post('/search-room', async (req, res) => {
+  const searchOption = [
+    {
+      $search: {
+        index: 'room_title_index',
+        text: {
+          query: req.body.roomName,
+          path: 'title',
+        },
+      },
+    },
+  ];
+  const result = await Room.aggregate(searchOption);
+  const populatedResult = await Room.populate(result, [
+    { path: 'owner' },
+    { path: 'users' },
+  ]);
+  res.render('search-room', { user: req.user, rooms: populatedResult });
 });
 
 app.use((req, res, next) => {
