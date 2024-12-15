@@ -290,13 +290,10 @@ app.post('/room-exit/:id', async (req, res) => {
 });
 
 app.delete('/room-delete/:id', async (req, res) => {
+  const room = await Room.findById(req.params.id);
   if (room.owner.toString() === req.user._id.toString()) {
-    const room = await Room.findById(req.params.id);
-    const chats = await Chat.find({
-      room: new mongoose.Types.ObjectId(req.params.id),
-    });
+    await Chat.deleteMany({ room: new mongoose.Types.ObjectId(req.params.id) });
     await room.deleteOne();
-    await chats.deleteMany();
     res.json({ success: true });
   } else {
     res.json({ success: false });
@@ -311,11 +308,21 @@ app.post('/create-room', async (req, res) => {
       users: [req.user._id],
     });
     if (req.body.password) {
-      await room.updateOne({ password: req.body.password });
+      const hashed = await bcrypt.hash(req.body.password, 10);
+      await room.updateOne({ password: hashed });
     }
     res.redirect(`/room/${room._id}`);
   } else {
     res.redirect('/login');
+  }
+});
+
+app.get('/search-room', async (req, res) => {
+  if (req.user) {
+    const rooms = await Room.find().populate('owner').populate('users');
+    res.render('search-room', { user: req.user, rooms });
+  } else {
+    res.redirect('login');
   }
 });
 
