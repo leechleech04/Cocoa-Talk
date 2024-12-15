@@ -2,7 +2,15 @@
 <link rel="stylesheet" href="/chat.css" />
 {% endblock %} {% block content %}
 <div class="chat-box">
-  <div class="chat-title"><h1>{{room.title}}</h1></div>
+  <div class="chat-title">
+    <a href="/room-list/{{user._id}}" class="room-list-link"
+      ><i class="fa-solid fa-arrow-left"></i> 채팅방 목록</a
+    >
+    <h1>{{room.title}}</h1>
+    <button class="room-info-btn" type="button">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
   <div class="chat-content">
     {% for chat in chats %} {% if chat.user._id.toString() ==
     user._id.toString() %}
@@ -48,6 +56,27 @@
     <button type="submit">전송</button>
   </form>
 </div>
+<div class="room-info">
+  <button type="button" class="room-exit-btn">
+    방 나가기 <i class="fa-solid fa-arrow-right-from-bracket"></i>
+  </button>
+  <p class="room-owner">
+    채팅방 관리자: {{room.owner.nickname}} ({{room.owner.id}})
+  </p>
+  <p class="room-users">채팅방 인원</p>
+  <div class="users-list">
+    {% for user in room.users %}
+    <p class="room-user">{{user.nickname}} ({{user.id}})</p>
+    {% endfor %}
+  </div>
+  {% if room.password %}
+  <p class="room-pw">비밀번호: {{room.password}}</p>
+  {% endif %}
+  <p class="room-created-at">
+    방 생성날짜: {{room.createdAt.toLocaleDateString('ko-KR', { timeZone:
+    'Asia/Seoul' })}}
+  </p>
+</div>
 {% endblock %} {% block script %}
 <script>
   const socket = io('/chat');
@@ -55,7 +84,7 @@
 <script>
   $(document).ready(() => {
     $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
-    socket.emit('join', {roomId: '{{room._id}}'});
+    socket.emit('join', { roomId: '{{room._id}}' });
     const roomId = '{{room._id}}';
     $('.chat-form').on('submit', (e) => {
       e.preventDefault();
@@ -97,6 +126,23 @@
         $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
       }
     });
+    $('.room-info-btn').on('click', () => {
+      const roomInfo = $('.room-info');
+      if (roomInfo.hasClass('show')) {
+        roomInfo.removeClass('show');
+      } else {
+        roomInfo.addClass('show');
+      }
+    });
+    $('.room-exit-btn').on('click', () => {
+      axios.post(`/room-exit/${roomId}`).then((res) => {
+        if (res.data.success) {
+          location.href = '/room-list/{{user._id}}';
+        } else {
+          alert(res.data.message);
+        }
+      });
+    })
   });
 </script>
 {% endblock %}

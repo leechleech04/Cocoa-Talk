@@ -119,9 +119,7 @@ chatNamespace.on('connection', (socket) => {
   console.log('New client connected on chat namespace', user);
   socket.on('join', async (data) => {
     const room = await Room.findById(data.roomId);
-    if (
-      room.users.some((one) => one._id.toString() === user._id.toString())
-    ) {
+    if (room.users.some((one) => one._id.toString() === user._id.toString())) {
       socket.join(data.roomId);
     }
   });
@@ -279,6 +277,11 @@ app.get('/room/:id', async (req, res) => {
   } else {
     return res.redirect('/');
   }
+});
+
+app.post('/room-exit/:id', async (req, res) => {
+  const room = await Room.findById(req.params.id);
+  
 });
 
 app.use((req, res, next) => {

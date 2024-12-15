@@ -8,8 +8,8 @@
     <h2>{{room.title}}</h2>
     <p class="owner">관리자: {{room.owner.nickname}}({{room.owner.id}})</p>
     <p class="users">
-      인원: {% for user in room.users %} {{user.nickname}}({{user.id}}) {%
-      endfor %}
+      인원({{room.users.length}}): {% for user in room.users %}
+      {{user.nickname}}({{user.id}}) {% endfor %}
     </p>
     <p class="createdAt">
       생성 날짜: {{room.createdAt.toLocaleDateString('ko-KR', { timeZone:
