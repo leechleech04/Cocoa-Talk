@@ -289,6 +289,20 @@ app.post('/room-exit/:id', async (req, res) => {
   }
 });
 
+app.delete('/room-delete/:id', async (req, res) => {
+  if (room.owner.toString() === req.user._id.toString()) {
+    const room = await Room.findById(req.params.id);
+    const chats = await Chat.find({
+      room: new mongoose.Types.ObjectId(req.params.id),
+    });
+    await room.deleteOne();
+    await chats.deleteMany();
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
+  }
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;

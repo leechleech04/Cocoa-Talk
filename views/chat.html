@@ -90,8 +90,8 @@
 <script>
   $(document).ready(() => {
     $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
-    socket.emit('join', { roomId: '{{room._id}}' });
     const roomId = '{{room._id}}';
+    socket.emit('join', { roomId });
     $('.chat-form').on('submit', (e) => {
       e.preventDefault();
       const message = $('[name=message]').val();
@@ -142,6 +142,15 @@
     });
     $('.room-exit-btn').on('click', () => {
       axios.post(`/room-exit/${roomId}`).then((res) => {
+        if (res.data.success) {
+          location.href = '/room-list/{{user._id}}';
+        } else {
+          location.href = '/login';
+        }
+      });
+    });
+    $('.room-delete-btn').on('click', () => {
+      axios.delete(`/room-delete/${roomId}`).then((res) => {
         if (res.data.success) {
           location.href = '/room-list/{{user._id}}';
         } else {
