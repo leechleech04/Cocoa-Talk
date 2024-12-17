@@ -410,8 +410,8 @@ app.post('/search-user', async (req, res) => {
 });
 
 app.put('/room-pw/:id', async (req, res) => {
-  if (req.user) {
-    const room = await Room.findById(req.params.id);
+  const room = await Room.findById(req.params.id);
+  if (req.user && req.user._id.toString() == room.owner.toString()) {
     if (await bcrypt.compare(req.body.oldPw, room.password)) {
       const hashed = await bcrypt.hash(req.body.newPw, 10);
       await room.updateOne({ password: hashed });
@@ -419,6 +419,35 @@ app.put('/room-pw/:id', async (req, res) => {
     } else {
       res.json({ success: false });
     }
+  } else {
+    res.redirect('/login');
+  }
+});
+
+app.post('/user-emission/:id', async (req, res) => {
+  const io = req.app.get('io');
+  const room = await Room.findById(req.params.id);
+  if (!req.user) {
+    return res.redirect('/login');
+  }
+  if (
+    room.owner.toString() === req.user._id.toString() &&
+    room.users.includes(new mongoose.Types.ObjectId(req.body.userId))
+  ) {
+    await room.updateOne({
+      $pull: { users: new mongoose.Types.ObjectId(req.body.userId) },
+    });
+    const emissionUser = await User.findById(req.body.userId);
+    await Chat.create({
+      room: new mongoose.Types.ObjectId(req.params.id),
+      user: req.user._id,
+      content: `${emissionUser.nickname}(${emissionUser.id})님이 방출되셨습니다.`,
+      notification: true,
+    });
+    io.of('/chat')
+      .to(req.params.id)
+      .emit('user-emission', { success: true, emissionUser });
+    res.json({ success: true });
   } else {
     res.redirect('/login');
   }

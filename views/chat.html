@@ -31,6 +31,15 @@
     </form>
   </div>
 </div>
+<div class="emission-modal-bg" style="display: none">
+  <div class="emission-modal">
+    <p></p>
+    <div class="btn-box">
+      <button type="button" class="emission-cancel-btn">취소</button>
+      <button type="button" class="emission-btn">방출</button>
+    </div>
+  </div>
+</div>
 <div class="chat-box">
   <div class="chat-title">
     <a href="/room-list/{{user._id}}" class="room-list-link"
@@ -111,8 +120,14 @@
   </p>
   <p class="room-users">채팅방 인원</p>
   <div class="users-list">
-    {% for user in room.users %}
-    <p class="room-user">{{user.nickname}} ({{user.id}})</p>
+    {% for userOne in room.users %}
+    <p class="room-user">
+      {{userOne.nickname}} ({{userOne.id}}) {% if user._id.toString() ==
+      room.owner._id.toString() %} {% if room.owner._id.toString() !=
+      userOne._id.toString() %}
+      <i class="fa-solid fa-square-xmark" data-userId="{{userOne._id}}"></i>
+      {% endif %} {% endif %}
+    </p>
     {% endfor %}
   </div>
   <p class="room-created-at">
@@ -260,6 +275,51 @@
           alert('기존 비밀번호가 일치하지 않습니다.');
         }
       });
+    });
+
+    $('.fa-square-xmark').on('click', (e) => {
+      const userName = $(e.currentTarget).parent().text();
+      $('.emission-btn').attr(
+        'data-userId',
+        $(e.currentTarget).attr('data-userId')
+      );
+      $('.emission-modal p').text(`${userName}을(를) 정말로 방출하시겠습니까?`);
+      $('.emission-modal-bg').show();
+    });
+    $('.emission-cancel-btn').on('click', () => {
+      $('.emission-modal-bg').hide();
+    });
+    $('.emission-btn').on('click', (e) => {
+      axios
+        .post(`/user-emission/${roomId}`, {
+          userId: $(e.currentTarget).attr('data-userId'),
+        })
+        .then((res) => {
+          if (res.data.success) {
+            $('.emission-modal-bg').hide();
+            $('.room-info').removeClass('show');
+          } else {
+            location.href = '/login';
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+    socket.on('user-emission', (data) => {
+      if (data.success) {
+        if (data.emissionUser._id.toString() == '{{user._id}}') {
+          location.href = '/room-list/{{user._id}}';
+          alert('{{room.title}}에서 방출되었습니다.');
+        }
+        const notification = $('<div></div>').addClass('notification');
+        notification.append(
+          $('<p></p>').text(
+            `${data.emissionUser.nickname}(${data.emissionUser.id})님이 방출되셨습니다.`
+          )
+        );
+        $('.chat-content').append(notification);
+      }
     });
   });
 </script>
