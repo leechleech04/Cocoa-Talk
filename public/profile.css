@@ -1,0 +1,53 @@
+.profile-content {
+  width: 50%;
+}
+
+p {
+  font-size: 24px;
+}
+
+li {
+  margin: 20px 0;
+}
+
+.friend-list,
+.room-list {
+  border: 2px solid #3a1d1d;
+  border-radius: 10px;
+  padding: 0 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.friend-room {
+  width: 100%;
+  border: 3px solid #3a1d1d;
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.friend-room:hover {
+  background-color: white;
+}
+
+.room-title {
+  display: inline-block;
+}
+
+.room-owner {
+  display: inline-block;
+  font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.room-users {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 20px;
+}

@@ -488,6 +488,18 @@ app.post('/user-emission/:id', async (req, res) => {
   }
 });
 
+app.get('/profile/:id', async (req, res) => {
+  if (req.user && req.user._id.toString() == req.params.id) {
+    const rooms = await Room.find({ users: req.user._id })
+      .populate('owner')
+      .populate('users');
+    const user = await User.findById(req.params.id).populate('friends');
+    res.render('profile', { user, rooms });
+  } else {
+    res.redirect('/login');
+  }
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;

@@ -1,0 +1,49 @@
+{% extends 'layout.html' %} {% block style %}
+<link rel="stylesheet" href="/profile.css" />
+{% endblock %} {% block content %}
+<h1>[{{user.nickname}}]의 프로필</h1>
+<div class="profile-content">
+  <ul>
+    <li><p>ID: {{user.id}}</p></li>
+    <li>
+      <p>
+        가입 날짜: {{user.createdAt.getFullYear(ko-KR, {timeZone:
+        'Asia/Seoul'})}}년 {{user.createdAt.getMonth(ko-KR, {timeZone:
+        'Asia/Seoul'}) + 1}}월 {{user.createdAt.getDate(ko-KR, {timeZone:
+        'Asia/Seoul'})}}일
+      </p>
+    </li>
+    <li>
+      <p>친구 목록</p>
+      <div class="friend-list">
+        {% if user.friends.length === 0 %}
+        <p>친구가 없습니다.</p>
+        {% endif %} {% for friend in user.friends %}
+        <div class="friend-room">
+          <p>{{friend.nickname}} ({{friend.id}})</p>
+        </div>
+        {% endfor %}
+      </div>
+    </li>
+    <li>
+      <p>채팅방 목록</p>
+      <div class="room-list">
+        {% if rooms.length === 0 %}
+        <p>참여한 채팅방이 없습니다.</p>
+        {% endif %} {% for enteredRoom in rooms %}
+        <div class="friend-room">
+          <h2 class="room-title">{{enteredRoom.title}}</h2>
+          <p class="room-owner">
+            관리자: {{enteredRoom.owner.nickname}}({{enteredRoom.owner.id}})
+          </p>
+          <p class="room-users">
+            인원({{enteredRoom.users.length}}): {% for user in enteredRoom.users
+            %} {{user.nickname}}({{user.id}}) {% endfor %}
+          </p>
+        </div>
+        {% endfor %}
+      </div>
+    </li>
+  </ul>
+</div>
+{% endblock %} {% block script %} {% endblock %}
