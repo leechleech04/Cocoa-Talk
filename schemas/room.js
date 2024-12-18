@@ -20,6 +20,10 @@ const roomSchema = new Schema({
     },
   ],
   password: String,
+  recentChatTime: {
+    type: Date,
+    default: Date.now,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

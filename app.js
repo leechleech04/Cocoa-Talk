@@ -124,6 +124,8 @@ chatNamespace.on('connection', (socket) => {
     }
   });
   socket.on('chat', async (data) => {
+    const room = await Room.findById(data.roomId);
+    const recentChatTime = room.recentChatTime;
     const document = await Chat.create({
       room: new mongoose.Types.ObjectId(data.roomId),
       user: user._id,
@@ -131,7 +133,38 @@ chatNamespace.on('connection', (socket) => {
     });
     const re = await document.populate('room');
     const result = await re.populate('user');
-    chatNamespace.to(data.roomId).emit('chat', result);
+    if (
+      recentChatTime.toLocaleDateString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+      }) !==
+      document.createdAt.toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' })
+    ) {
+      Chat.create({
+        room: new mongoose.Types.ObjectId(data.roomId),
+        user: user._id,
+        content: document.createdAt.toLocaleDateString('ko-KR', {
+          timeZone: 'Asia/Seoul',
+        }),
+        notification: true,
+        createdAt: new Date(
+          document.createdAt.getFullYear(),
+          document.createdAt.getMonth(),
+          document.createdAt.getDate(),
+          0,
+          0,
+          0,
+          0
+        ),
+      });
+      chatNamespace.to(data.roomId).emit('chat', {
+        result,
+        dateChange: true,
+        newDate: document.createdAt,
+      });
+    } else {
+      chatNamespace.to(data.roomId).emit('chat', { result, dateChange: false });
+    }
+    await room.updateOne({ $set: { recentChatTime: document.createdAt } });
   });
   socket.on('disconnect', () => {
     console.log('Client disconnected on chat namespace', user);
@@ -283,6 +316,7 @@ app.get('/room/:id', async (req, res) => {
     const chats = await Chat.find({
       room: new mongoose.Types.ObjectId(req.params.id),
     })
+      .sort({ createdAt: 1 })
       .populate('room')
       .populate('user');
     return res.render('chat', { room, chats, user: req.user });

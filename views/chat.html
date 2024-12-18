@@ -151,19 +151,30 @@
       socket.emit('chat', { message, roomId });
     });
     socket.on('chat', (data) => {
-      if (data.room._id.toString() == roomId.toString()) {
+      if (data.result.room._id.toString() == roomId.toString()) {
+        if (data.dateChange) {
+          const notification = $('<div></div>').addClass('notification');
+          notification.append(
+            $('<p></p>').text(
+              new Date(data.newDate).toLocaleDateString('ko-KR', {
+                timeZone: 'Asia/Seoul',
+              })
+            )
+          );
+          $('.chat-content').append(notification);
+        }
         const contentCreatedAt = $('<div></div>').addClass('content-createdAt');
         const msgCreatedAt = $('<div></div>').addClass('msg-createdAt');
         msgCreatedAt.append(
           $('<p></p>').text(
-            new Date(data.createdAt).toLocaleTimeString('ko-KR', {
+            new Date(data.result.createdAt).toLocaleTimeString('ko-KR', {
               timeZone: 'Asia/Seoul',
             })
           )
         );
         const msgContent = $('<div></div>').addClass('msg-content');
-        msgContent.append($('<p></p>').text(data.content));
-        if (data.user._id.toString() == '{{user._id}}') {
+        msgContent.append($('<p></p>').text(data.result.content));
+        if (data.result.user._id.toString() == '{{user._id}}') {
           contentCreatedAt.append(msgCreatedAt);
           contentCreatedAt.append(msgContent);
           const myMsg = $('<div></div>').addClass('my-msg');
@@ -172,7 +183,9 @@
         } else {
           const msgUser = $('<div></div>').addClass('msg-user');
           msgUser.append(
-            $('<p></p>').text(`${data.user.nickname}(${data.user.id})`)
+            $('<p></p>').text(
+              `${data.result.user.nickname}(${data.result.user.id})`
+            )
           );
           contentCreatedAt.append(msgContent);
           contentCreatedAt.append(msgCreatedAt);
