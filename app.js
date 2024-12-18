@@ -285,6 +285,7 @@ app.post('/logout', (req, res) => {
 app.get('/room-list/:id', async (req, res) => {
   if (req.user && req.user._id == req.params.id) {
     const rooms = await Room.find({ users: req.params.id })
+      .sort({ recentChatTime: -1 })
       .populate('owner')
       .populate('users');
     res.render('room-list', { rooms });
