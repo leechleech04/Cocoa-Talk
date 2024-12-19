@@ -493,8 +493,24 @@ app.get('/profile/:id', async (req, res) => {
     const rooms = await Room.find({ users: req.user._id })
       .populate('owner')
       .populate('users');
-    const user = await User.findById(req.params.id).populate('friends');
-    res.render('profile', { user, rooms });
+    const profileOwner = await User.findById(req.params.id).populate('friends');
+    const user = req.user;
+    res.render('profile', { user, profileOwner, rooms });
+  } else {
+    res.redirect('/login');
+  }
+});
+
+app.put('/user-pw/:id', async (req, res) => {
+  if (req.user._id.toString() == req.params.id.toString()) {
+    if (await bcrypt.compare(req.body.oldPw, req.user.password)) {
+      await User.findByIdAndUpdate(req.params.id, {
+        password: await bcrypt.hash(req.body.newPw, 10),
+      });
+      res.json({ success: true });
+    } else {
+      res.json({ success: false });
+    }
   } else {
     res.redirect('/login');
   }

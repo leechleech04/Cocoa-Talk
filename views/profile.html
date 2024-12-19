@@ -1,24 +1,45 @@
 {% extends 'layout.html' %} {% block style %}
 <link rel="stylesheet" href="/profile.css" />
 {% endblock %} {% block content %}
-<h1>[{{user.nickname}}]의 프로필</h1>
+<div class="pw-modal-bg" style="display: none">
+  <div class="pw-modal">
+    <h2>비밀번호 변경</h2>
+    <form class="pw-form">
+      <input
+        type="password"
+        name="oldPw"
+        placeholder="기존 비밀번호"
+        required
+      />
+      <input type="password" name="newPw" placeholder="새 비밀번호" required />
+      <div class="btn-box">
+        <button type="button" class="pw-cancel-btn">취소</button>
+        <button type="submit">수정</button>
+      </div>
+    </form>
+  </div>
+</div>
+<h1>[{{profileOwner.nickname}}]의 프로필</h1>
 <div class="profile-content">
+  {% if user._id.toString() == profileOwner._id.toString() %}
+  <button type="button" class="edit-pw">비밀번호 변경</button>
+  {% endif %}
   <ul>
-    <li><p>ID: {{user.id}}</p></li>
+    <li><p>ID: {{profileOwner.id}}</p></li>
     <li>
       <p>
-        가입 날짜: {{user.createdAt.getFullYear(ko-KR, {timeZone:
-        'Asia/Seoul'})}}년 {{user.createdAt.getMonth(ko-KR, {timeZone:
-        'Asia/Seoul'}) + 1}}월 {{user.createdAt.getDate(ko-KR, {timeZone:
-        'Asia/Seoul'})}}일
+        가입 날짜: {{profileOwner.createdAt.getFullYear(ko-KR, {timeZone:
+        'Asia/Seoul'})}}년 {{profileOwner.createdAt.getMonth(ko-KR, {timeZone:
+        'Asia/Seoul'}) + 1}}월 {{profileOwner.createdAt.getDate(ko-KR,
+        {timeZone: 'Asia/Seoul'})}}일
       </p>
     </li>
     <li>
       <p>친구 목록</p>
       <div class="friend-list">
-        {% if user.friends.length === 0 %}
+        {% if profileOwner.friends.length === 0 %}
         <p>친구가 없습니다.</p>
-        {% endif %} {% for friend in user.friends %}
+        {% endif %} {% for friend in profileOwner.friends %}
         <div class="friend-room">
           <p>{{friend.nickname}} ({{friend.id}})</p>
         </div>
@@ -46,4 +67,34 @@
     </li>
   </ul>
 </div>
-{% endblock %} {% block script %} {% endblock %}
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(() => {
+    $('.edit-pw').on('click', () => {
+      $('.pw-modal-bg').show();
+    });
+
+    $('.pw-cancel-btn').on('click', () => {
+      $('.pw-modal-bg').hide();
+    });
+
+    $('.pw-form').on('submit', (e) => {
+      e.preventDefault();
+      const oldPw = $('[name=oldPw]').val();
+      const newPw = $('[name=newPw]').val();
+      axios
+        .put('/user-pw/{{profileOwner._id.toString()}}', { oldPw, newPw })
+        .then((res) => {
+          if (res.data.success) {
+            $('.pw-modal-bg').hide();
+            alert('비밀번호가 변경되었습니다.');
+          } else {
+            alert('기존 비밀번호가 일치하지 않습니다.');
+          }
+          $('[name=oldPw]').val('');
+          $('[name=newPw]').val('');
+        });
+    });
+  });
+</script>
+{% endblock %}
