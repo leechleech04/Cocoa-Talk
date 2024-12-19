@@ -122,13 +122,15 @@
   <p class="room-users">채팅방 인원</p>
   <div class="users-list">
     {% for userOne in room.users %}
-    <p class="room-user">
-      {{userOne.nickname}} ({{userOne.id}}) {% if user._id.toString() ==
-      room.owner._id.toString() %} {% if room.owner._id.toString() !=
-      userOne._id.toString() %}
+    <div class="room-user" data-userId="{{userOne._id}}">
+      <p>
+        {{userOne.nickname}} ({{userOne.id}}) {% if user._id.toString() ==
+        room.owner._id.toString() %} {% if room.owner._id.toString() !=
+        userOne._id.toString() %}
+      </p>
       <i class="fa-solid fa-square-xmark" data-userId="{{userOne._id}}"></i>
       {% endif %} {% endif %}
-    </p>
+    </div>
     {% endfor %}
   </div>
   <p class="room-created-at">
@@ -334,6 +336,14 @@
         );
         $('.chat-content').append(notification);
       }
+    });
+
+    $('.room-user').each(function () {
+      $(this)
+        .children(':first')
+        .on('click', (e) => {
+          location.href = `/profile/${$(this).attr('data-userId')}`;
+        });
     });
   });
 </script>

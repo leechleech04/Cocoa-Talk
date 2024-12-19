@@ -296,6 +296,15 @@
   border-radius: 10px;
 }
 
+.room-user p {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.room-user p:hover {
+  text-decoration: underline;
+}
+
 .fa-square-xmark {
   float: right;
   color: #ff0000;

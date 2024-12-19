@@ -489,7 +489,7 @@ app.post('/user-emission/:id', async (req, res) => {
 });
 
 app.get('/profile/:id', async (req, res) => {
-  if (req.user && req.user._id.toString() == req.params.id) {
+  if (req.user) {
     const rooms = await Room.find({ users: req.user._id })
       .populate('owner')
       .populate('users');
