@@ -19,10 +19,25 @@
     </form>
   </div>
 </div>
+{% if user._id.toString() != profileOwner._id.toString() %}
+<div class="friend-modal-bg" style="display: none">
+  <div class="friend-modal">
+    <h2>
+      {{profileOwner.nickname}}({{profileOwner.id}}) 님을 친구 추가하시겠습니까?
+    </h2>
+    <div class="btn-box">
+      <button type="button" class="friend-cancel-btn">취소</button>
+      <button type="button" class="add-btn">추가</button>
+    </div>
+  </div>
+</div>
+{% endif %}
 <h1>[{{profileOwner.nickname}}]의 프로필</h1>
 <div class="profile-content">
   {% if user._id.toString() == profileOwner._id.toString() %}
   <button type="button" class="edit-pw">비밀번호 변경</button>
+  {% else %}
+  <button type="button" class="friend-btn">친구 추가</button>
   {% endif %}
   <ul>
     <li><p>ID: {{profileOwner.id}}</p></li>
@@ -35,7 +50,7 @@
       </p>
     </li>
     <li>
-      <p>친구 목록</p>
+      <p>친구 목록 ({{profileOwner.friends.length}})</p>
       <div class="friend-list">
         {% if profileOwner.friends.length === 0 %}
         <p>친구가 없습니다.</p>
@@ -47,7 +62,7 @@
       </div>
     </li>
     <li>
-      <p>채팅방 목록</p>
+      <p>채팅방 목록 ({{rooms.length}})</p>
       <div class="room-list">
         {% if rooms.length === 0 %}
         <p>참여한 채팅방이 없습니다.</p>
@@ -94,6 +109,25 @@
           $('[name=oldPw]').val('');
           $('[name=newPw]').val('');
         });
+    });
+
+    $('.friend-btn').on('click', () => {
+      $('.friend-modal-bg').show();
+    });
+
+    $('.friend-cancel-btn').on('click', () => {
+      $('.friend-modal-bg').hide();
+    });
+
+    $('.add-btn').on('click', () => {
+      axios.post('/add-friend/{{profileOwner._id.toString()}}').then((res) => {
+        if (res.data.success) {
+          alert('친구 추가가 완료되었습니다.');
+          $('.friend-modal-bg').hide();
+        } else {
+          alert('이미 친구 추가가 되어있습니다.');
+        }
+      });
     });
   });
 </script>

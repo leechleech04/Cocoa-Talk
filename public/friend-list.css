@@ -1,0 +1,31 @@
+.friend-list {
+  width: 50%;
+  max-height: 70%;
+  overflow-y: auto;
+}
+
+.friend {
+  width: 100%;
+  border: 3px solid #3a1d1d;
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.friend:hover {
+  background-color: #ffffff;
+}
+
+.nickname {
+  font-size: 24px;
+}
+
+.id {
+  font-size: 20px;
+}
+
+.createdAt {
+  font-size: 16px;
+  color: #646464;
+}

@@ -1,0 +1,27 @@
+{% extends 'layout.html' %} {% block style %}
+<link rel="stylesheet" href="/friend-list.css" />
+{% endblock %} {% block content %}
+<h1>친구 목록</h1>
+<div class="friend-list">
+  {% for friend in friends %}
+  <div class="friend" data-id="{{friend._id}}">
+    <p class="nickname">닉네임: {{friend.nickname}}</p>
+    <p class="id">ID: {{friend.id}}</p>
+    <p class="createdAt">
+      가입 날짜: {{friend.createdAt.toLocaleDateString('ko-KR', { timeZone:
+      'Asia/Seoul' })}}
+    </p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(() => {
+    $('.friend').each(function () {
+      $(this).on('click', (e) => {
+        location.href = `/profile/${$(this).data('id')}`;
+      });
+    });
+  });
+</script>
+{% endblock %}

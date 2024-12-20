@@ -516,6 +516,31 @@ app.put('/user-pw/:id', async (req, res) => {
   }
 });
 
+app.post('/add-friend/:id', async (req, res) => {
+  if (req.user && req.user._id.toString() !== req.params.id.toString()) {
+    const friend = await User.findById(req.params.id);
+    if (!req.user.friends.includes(friend._id)) {
+      const user = await User.findById(req.user._id);
+      await user.updateOne({ $push: { friends: friend._id } });
+      res.json({ success: true });
+    } else {
+      res.json({ success: false });
+    }
+  } else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/friend-list/:id', async (req, res) => {
+  if (req.user && req.user._id.toString() == req.params.id) {
+    const user = await User.findById(req.params.id).populate('friends');
+    const friends = user.friends;
+    res.render('friend-list', { friends });
+  } else {
+    res.redirect('/login');
+  }
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;
