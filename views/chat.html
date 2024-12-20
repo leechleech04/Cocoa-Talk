@@ -40,6 +40,24 @@
     </div>
   </div>
 </div>
+<div class="invite-modal-bg">
+  <div class="invite-modal">
+    <h2>친구 초대</h2>
+    <div class="friend-list">
+      {% for friend in inviteFriends %}
+      <div class="friend" data-userId="{{friend._id}}">
+        <p>{{friend.nickname}}({{friend.id}})</p>
+        <i class="fa-regular fa-square-check"></i>
+        <i class="fa-solid fa-square-check" style="display: none"></i>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="btn-box">
+      <button type="button" class="invite-cancel-btn">취소</button>
+      <button type="button" class="invite-modal-btn">초대</button>
+    </div>
+  </div>
+</div>
 <div class="chat-box">
   <div class="chat-title">
     <a href="/room-list/{{user._id}}" class="room-list-link"
@@ -110,6 +128,7 @@
     방 나가기 <i class="fa-solid fa-arrow-right-from-bracket"></i>
   </button>
   {% endif %}
+  <button type="button" class="invite-btn">친구 초대</button>
   <p class="room-title">
     채팅방 이름: {{room.title}} {% if room.owner._id.toString() ==
     user._id.toString() %}
@@ -344,6 +363,13 @@
         .on('click', (e) => {
           location.href = `/profile/${$(this).attr('data-userId')}`;
         });
+    });
+
+    $(
+      '.friend .fa-regular.fa-square-check, .friend .fa-solid.fa-square-check'
+    ).click(function () {
+      $(this).hide();
+      $(this).siblings('i').show();
     });
   });
 </script>

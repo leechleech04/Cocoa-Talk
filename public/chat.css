@@ -1,6 +1,7 @@
 .title-modal-bg,
 .pw-modal-bg,
-.emission-modal-bg {
+.emission-modal-bg,
+.invite-modal-bg {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,7 +14,8 @@
 
 .title-modal,
 .pw-modal,
-.emission-modal {
+.emission-modal,
+.invite-modal {
   border: 3px solid #3a1d1d;
   border-radius: 10px;
   background-color: #ffffff;
@@ -55,13 +57,67 @@
 
 .title-cancel-btn,
 .pw-cancel-btn,
-.emission-cancel-btn {
+.emission-cancel-btn,
+.invite-cancel-btn {
   background-color: #646464;
 }
 
 .title-cancel-btn:hover,
-.pw-cancel-btn:hover {
+.pw-cancel-btn:hover,
+.emission-cancel-btn,
+.invite-cancel-btn:hover {
   background-color: #424242;
+}
+
+.invite-modal {
+  width: 60%;
+  height: 70%;
+  max-height: 70%;
+  overflow-y: auto;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.invite-modal > h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.friend-list {
+  width: 100%;
+}
+
+.friend {
+  display: flex;
+  border: 3px solid #3a1d1d;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 5px 20px;
+  background-color: #f7e600;
+}
+
+.friend p {
+  display: inline-block;
+  font-size: 26px;
+  vertical-align: top;
+  flex-grow: 1;
+}
+
+.fa-square-check {
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.fa-solid.fa-square-check {
+  color: #00ce00;
+}
+
+.invite-modal-btn {
+  background-color: #0000ff;
+}
+
+.invite-modal-btn:hover {
+  background-color: #0000cc;
 }
 
 .chat-box {
@@ -259,6 +315,16 @@
 
 .pw-put-btn:hover {
   background-color: #e0d100;
+}
+
+.invite-btn {
+  width: 100px;
+  background-color: #0000ff;
+  float: right;
+}
+
+.invite-btn:hover {
+  background-color: #0000cc;
 }
 
 .room-title {

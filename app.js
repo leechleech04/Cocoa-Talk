@@ -320,7 +320,12 @@ app.get('/room/:id', async (req, res) => {
       .sort({ createdAt: 1 })
       .populate('room')
       .populate('user');
-    return res.render('chat', { room, chats, user: req.user });
+    const user = await User.findById(req.user._id).populate('friends');
+    const inviteFriends = user.friends.filter(
+      (one) =>
+        !room.users.some((user) => user._id.toString() === one._id.toString())
+    );
+    return res.render('chat', { room, chats, user, inviteFriends });
   } else {
     return res.redirect('/');
   }
