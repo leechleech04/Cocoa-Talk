@@ -99,7 +99,7 @@
     </div>
     {% else %}
     <div class="other-msg">
-      <div class="msg-user">
+      <div class="msg-user" id-user="{{chat.user._id}}">
         <p>{{chat.user.nickname}}({{chat.user.id}})</p>
       </div>
       <div class="content-createdAt">
@@ -239,6 +239,7 @@
           $('.chat-content').append(myMsg);
         } else {
           const msgUser = $('<div></div>').addClass('msg-user');
+          msgUser.attr('id-user', data.result.user._id);
           msgUser.append(
             $('<p></p>').text(
               `${data.result.user.nickname}(${data.result.user.id})`
@@ -454,6 +455,10 @@
         .catch((err) => {
           console.error(err);
         });
+    });
+
+    $('.msg-user p').on('click', function () {
+      location.href = `/profile/${$(this).parent().attr('id-user')}`;
     });
   });
 </script>

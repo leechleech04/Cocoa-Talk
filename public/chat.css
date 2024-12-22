@@ -197,12 +197,13 @@
   align-self: flex-end;
 }
 
-.my-msg .msg-user {
-  text-align: right;
-}
-
 .msg-user p {
   font-size: 18px;
+  cursor: pointer;
+}
+
+.msg-user p:hover {
+  text-decoration: underline;
 }
 
 .content-createdAt {
