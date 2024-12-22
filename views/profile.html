@@ -36,9 +36,11 @@
 <div class="profile-content">
   {% if user._id.toString() == profileOwner._id.toString() %}
   <button type="button" class="edit-pw">비밀번호 변경</button>
+  {% else %} {% if user.friends.includes(profileOwner._id) %}
+  <button type="button" class="delete-friend-btn">친구 삭제</button>
   {% else %}
   <button type="button" class="friend-btn">친구 추가</button>
-  {% endif %}
+  {% endif %} {% endif %}
   <ul>
     <li><p>ID: {{profileOwner.id}}</p></li>
     <li>
@@ -123,11 +125,27 @@
       axios.post('/add-friend/{{profileOwner._id.toString()}}').then((res) => {
         if (res.data.success) {
           alert('친구 추가가 완료되었습니다.');
-          $('.friend-modal-bg').hide();
+          location.reload();
         } else {
           alert('이미 친구 추가가 되어있습니다.');
         }
       });
+    });
+
+    $('.delete-friend-btn').on('click', () => {
+      axios
+        .delete('/delete-friend/{{profileOwner._id}}')
+        .then((res) => {
+          if (res.data.success) {
+            alert('친구 삭제가 완료되었습니다.');
+            location.reload();
+          } else {
+            alert('친구 삭제에 실패했습니다.');
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     });
   });
 </script>
