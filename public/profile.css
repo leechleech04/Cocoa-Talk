@@ -107,6 +107,11 @@ li {
   background-color: #cc0000;
 }
 
+.fa-user-plus,
+.fa-user-slash {
+  margin-right: 5px;
+}
+
 .friend-list,
 .room-list {
   border: 2px solid #3a1d1d;

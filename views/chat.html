@@ -77,14 +77,24 @@
     <div class="my-msg">
       <div class="content-createdAt">
         <div class="msg-createdAt">
+          <i
+            class="fa-solid fa-xmark chat-delete-btn"
+            data-chatId="{{chat._id}}"
+          ></i>
           <p>
             {{chat.createdAt.toLocaleTimeString('ko-KR', { timeZone:
             'Asia/Seoul' })}}
           </p>
         </div>
+        {% if chat.deleted %}
+        <div class="msg-content deleted-chat">
+          <p>{{chat.content}}</p>
+        </div>
+        {%else%}
         <div class="msg-content">
           <p>{{chat.content}}</p>
         </div>
+        {% endif %}
       </div>
     </div>
     {% else %}
@@ -188,6 +198,27 @@
         }
         const contentCreatedAt = $('<div></div>').addClass('content-createdAt');
         const msgCreatedAt = $('<div></div>').addClass('msg-createdAt');
+        const xmark = $('<i></i>').addClass(
+          'fa-solid fa-xmark chat-delete-btn'
+        );
+        xmark.on('click', function () {
+          axios
+            .delete(`/delete-chat/${$(this).attr('data-chatId')}`)
+            .then((res) => {
+              if (res.data.success) {
+                const content = $(this).parent().next().children().first();
+                content.text('삭제된 메시지입니다.');
+                content.parent().addClass('deleted-chat');
+              } else {
+                location.href = '/login';
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        });
+        xmark.attr('data-chatId', data.result._id);
+        msgCreatedAt.append(xmark);
         msgCreatedAt.append(
           $('<p></p>').text(
             new Date(data.result.createdAt).toLocaleTimeString('ko-KR', {
@@ -196,6 +227,9 @@
           )
         );
         const msgContent = $('<div></div>').addClass('msg-content');
+        if (data.result.deleted) {
+          msgContent.addClass('deleted-chat');
+        }
         msgContent.append($('<p></p>').text(data.result.content));
         if (data.result.user._id.toString() == '{{user._id}}') {
           contentCreatedAt.append(msgCreatedAt);
@@ -396,6 +430,23 @@
         .then((res) => {
           if (res.data.success) {
             location.reload();
+          } else {
+            location.href = '/login';
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+
+    $('.chat-delete-btn').on('click', function () {
+      axios
+        .delete(`/delete-chat/${$(this).attr('data-chatId')}`)
+        .then((res) => {
+          if (res.data.success) {
+            const content = $(this).parent().next().children().first();
+            content.text('삭제된 메시지입니다.');
+            content.addClass('deleted-chat');
           } else {
             location.href = '/login';
           }

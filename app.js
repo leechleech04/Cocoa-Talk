@@ -577,6 +577,16 @@ app.delete('/delete-friend/:id', async (req, res) => {
   }
 });
 
+app.delete('/delete-chat/:id', async (req, res) => {
+  const chat = await Chat.findById(req.params.id);
+  if (req.user && req.user._id.toString() == chat.user.toString()) {
+    await chat.updateOne({ content: '삭제된 메시지입니다.', deleted: true });
+    res.json({ success: true });
+  } else {
+    res.redirect('/login');
+  }
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;

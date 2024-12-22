@@ -37,9 +37,14 @@
   {% if user._id.toString() == profileOwner._id.toString() %}
   <button type="button" class="edit-pw">비밀번호 변경</button>
   {% else %} {% if user.friends.includes(profileOwner._id) %}
-  <button type="button" class="delete-friend-btn">친구 삭제</button>
+  <button type="button" class="delete-friend-btn">
+    <i class="fa-solid fa-user-slash"></i>친구 삭제
+  </button>
   {% else %}
-  <button type="button" class="friend-btn">친구 추가</button>
+  <button type="button" class="friend-btn">
+    <i class="fa-solid fa-user-plus"></i>
+    친구 추가
+  </button>
   {% endif %} {% endif %}
   <ul>
     <li><p>ID: {{profileOwner.id}}</p></li>

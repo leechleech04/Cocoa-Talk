@@ -6,11 +6,21 @@
   <p>{{user.nickname}}({{user.id}}) 님, 반갑습니다.</p>
 </div>
 <div class="menu">
-  <a href="/search-room">채팅방 검색</a>
-  <a href="/room-list/{{user._id}}">채팅방 목록</a>
-  <a href="/search-user">유저 검색</a>
-  <a href="/friend-list/{{user._id}}">친구 목록</a>
-  <a href="/profile/{{user._id}}">프로필</a>
+  <a href="/search-room"
+    ><i class="fa-solid fa-magnifying-glass"></i>채팅방 검색</a
+  >
+  <a href="/room-list/{{user._id}}"
+    ><i class="fa-solid fa-comments"></i>채팅방 목록</a
+  >
+  <a href="/search-user"
+    ><i class="fa-solid fa-magnifying-glass"></i>유저 검색</a
+  >
+  <a href="/friend-list/{{user._id}}"
+    ><i class="fa-solid fa-user-group"></i>친구 목록</a
+  >
+  <a href="/profile/{{user._id}}"
+    ><i class="fa-solid fa-address-card"></i>프로필</a
+  >
 </div>
 {% endblock %} {% block script %}
 <script>
