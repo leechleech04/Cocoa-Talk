@@ -40,9 +40,13 @@
     </div>
   </div>
 </div>
-<div class="invite-modal-bg">
+<div class="invite-modal-bg" style="display: none">
   <div class="invite-modal">
     <h2>친구 초대</h2>
+    <div class="btn-box">
+      <button type="button" class="invite-cancel-btn">취소</button>
+      <button type="button" class="invite-modal-btn">초대</button>
+    </div>
     <div class="friend-list">
       {% for friend in inviteFriends %}
       <div class="friend" data-userId="{{friend._id}}">
@@ -51,10 +55,6 @@
         <i class="fa-solid fa-square-check" style="display: none"></i>
       </div>
       {% endfor %}
-    </div>
-    <div class="btn-box">
-      <button type="button" class="invite-cancel-btn">취소</button>
-      <button type="button" class="invite-modal-btn">초대</button>
     </div>
   </div>
 </div>
@@ -122,8 +122,9 @@
   <button type="button" class="room-delete-btn">
     방 삭제 <i class="fa-solid fa-xmark"></i>
   </button>
+  {% if room.password %}
   <button type="button" class="pw-put-btn">비밀번호 변경</button>
-  {% else %}
+  {% endif %} {% else %}
   <button type="button" class="room-exit-btn">
     방 나가기 <i class="fa-solid fa-arrow-right-from-bracket"></i>
   </button>
@@ -253,6 +254,7 @@
         )
       );
       $('.chat-content').append(notification);
+      $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
     });
     socket.on('room-exit', (data) => {
       const notification = $('<div></div>').addClass('notification');
@@ -262,6 +264,7 @@
         )
       );
       $('.chat-content').append(notification);
+      $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
     });
 
     $('.fa-pencil').on('click', () => {
@@ -354,6 +357,7 @@
           )
         );
         $('.chat-content').append(notification);
+        $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
       }
     });
 
@@ -370,6 +374,35 @@
     ).click(function () {
       $(this).hide();
       $(this).siblings('i').show();
+    });
+
+    $('.invite-btn').on('click', () => {
+      $('.invite-modal-bg').show();
+    });
+
+    $('.invite-cancel-btn').on('click', () => {
+      $('.invite-modal-bg').hide();
+    });
+
+    $('.invite-modal-btn').on('click', () => {
+      const userIds = [];
+      $('.friend .fa-solid.fa-square-check').each(function () {
+        if ($(this).is(':visible')) {
+          userIds.push($(this).parent().attr('data-userId'));
+        }
+      });
+      axios
+        .post(`/room-invite/${roomId}`, { userIds })
+        .then((res) => {
+          if (res.data.success) {
+            location.reload();
+          } else {
+            location.href = '/login';
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     });
   });
 </script>

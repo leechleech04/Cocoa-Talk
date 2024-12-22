@@ -55,6 +55,10 @@
   margin-top: 10px;
 }
 
+.invite-modal .btn-box {
+  margin-bottom: 10px;
+}
+
 .title-cancel-btn,
 .pw-cancel-btn,
 .emission-cancel-btn,

@@ -546,6 +546,25 @@ app.get('/friend-list/:id', async (req, res) => {
   }
 });
 
+app.post('/room-invite/:id', async (req, res) => {
+  if (req.user) {
+    const room = await Room.findById(req.params.id);
+    for (let i = 0; i < req.body.userIds.length; i++) {
+      const invitedUser = await User.findById(req.body.userIds[i]);
+      await room.updateOne({ $push: { users: invitedUser._id } });
+      Chat.create({
+        room: new mongoose.Types.ObjectId(req.params.id),
+        user: req.user._id,
+        content: `${req.user.nickname}(${req.user.id})님이 ${invitedUser.nickname}(${invitedUser.id})님을 초대하셨습니다.`,
+        notification: true,
+      });
+    }
+    res.json({ success: true });
+  } else {
+    res.redirect('/login');
+  }
+});
+
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;
