@@ -32,17 +32,34 @@ nunjucks.configure('views', {
   watch: true,
 });
 
-const connectDB = mongoose
-  .connect(process.env.MONGO_URI, {
-    dbName: 'cocoatalk',
-  })
-  .then(() => {
+// const connectDB = mongoose
+//   .connect(process.env.MONGO_URI, {
+//     dbName: 'cocoatalk',
+//   })
+//   .then(() => {
+//     console.log('MongoDB connected');
+//     server.listen(app.get('port'), () => {
+//       console.log(app.get('port'), '번 포트에서 대기 중');
+//     });
+//   })
+//   .catch((err) => console.error(err));
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      dbName: 'cocoatalk',
+      useNewUrlParser: true,
+      useUnifiedTopology: true, // 안정적인 연결을 위해 권장 옵션
+    });
     console.log('MongoDB connected');
     server.listen(app.get('port'), () => {
       console.log(app.get('port'), '번 포트에서 대기 중');
     });
-  })
-  .catch((err) => console.error(err));
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    setTimeout(connectDB, 5000); // 재연결 시도 (5초 후)
+  }
+};
 
 mongoose.connection.on('error', (error) => {
   console.error('MongoDB connection error', error);
@@ -139,7 +156,7 @@ chatNamespace.on('connection', (socket) => {
       }) !==
       document.createdAt.toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' })
     ) {
-      Chat.create({
+      await Chat.create({
         room: new mongoose.Types.ObjectId(data.roomId),
         user: user._id,
         content: document.createdAt.toLocaleDateString('ko-KR', {
@@ -305,7 +322,7 @@ app.get('/room/:id', async (req, res) => {
       )
     ) {
       await room.updateOne({ $push: { users: req.user._id } });
-      Chat.create({
+      await Chat.create({
         room: new mongoose.Types.ObjectId(req.params.id),
         user: req.user._id,
         content: `${req.user.nickname}(${req.user.id})님이 입장하셨습니다.`,
@@ -337,7 +354,7 @@ app.post('/room-exit/:id', async (req, res) => {
   if (room.users.includes(req.user._id)) {
     io.of('/chat').to(req.params.id).emit('room-exit', { user: req.user });
     await room.updateOne({ $pull: { users: req.user._id } });
-    Chat.create({
+    await Chat.create({
       room: new mongoose.Types.ObjectId(req.params.id),
       user: req.user._id,
       content: `${req.user.nickname}(${req.user.id})님이 퇴장하셨습니다.`,

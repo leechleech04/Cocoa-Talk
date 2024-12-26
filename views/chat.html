@@ -282,6 +282,17 @@
       });
     });
     socket.on('room-enter', (data) => {
+      if (data.dateChange) {
+        const notification = $('<div></div>').addClass('notification');
+        notification.append(
+          $('<p></p>').text(
+            new Date(data.newDate).toLocaleDateString('ko-KR', {
+              timeZone: 'Asia/Seoul',
+            })
+          )
+        );
+        $('.chat-content').append(notification);
+      }
       const notification = $('<div></div>').addClass('notification');
       notification.append(
         $('<p></p>').text(
@@ -292,6 +303,17 @@
       $('.chat-content').scrollTop($('.chat-content')[0].scrollHeight);
     });
     socket.on('room-exit', (data) => {
+      if (data.dateChange) {
+        const notification = $('<div></div>').addClass('notification');
+        notification.append(
+          $('<p></p>').text(
+            new Date(data.newDate).toLocaleDateString('ko-KR', {
+              timeZone: 'Asia/Seoul',
+            })
+          )
+        );
+        $('.chat-content').append(notification);
+      }
       const notification = $('<div></div>').addClass('notification');
       notification.append(
         $('<p></p>').text(

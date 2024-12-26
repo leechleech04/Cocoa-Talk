@@ -21,10 +21,12 @@
     "mongodb": "^6.12.0",
     "mongoose": "^8.8.4",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "nunjucks": "^3.2.4",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "socket.io-adapter-mongoose": "^0.5.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

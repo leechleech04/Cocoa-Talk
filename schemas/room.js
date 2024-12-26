@@ -22,7 +22,7 @@ const roomSchema = new Schema({
   password: String,
   recentChatTime: {
     type: Date,
-    default: Date.now,
+    default: new Date(0),
   },
   createdAt: {
     type: Date,
