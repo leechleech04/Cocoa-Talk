@@ -32,34 +32,17 @@ nunjucks.configure('views', {
   watch: true,
 });
 
-// const connectDB = mongoose
-//   .connect(process.env.MONGO_URI, {
-//     dbName: 'cocoatalk',
-//   })
-//   .then(() => {
-//     console.log('MongoDB connected');
-//     server.listen(app.get('port'), () => {
-//       console.log(app.get('port'), '번 포트에서 대기 중');
-//     });
-//   })
-//   .catch((err) => console.error(err));
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      dbName: 'cocoatalk',
-      useNewUrlParser: true,
-      useUnifiedTopology: true, // 안정적인 연결을 위해 권장 옵션
-    });
+const connectDB = mongoose
+  .connect(process.env.MONGO_URI, {
+    dbName: 'cocoatalk',
+  })
+  .then(() => {
     console.log('MongoDB connected');
     server.listen(app.get('port'), () => {
       console.log(app.get('port'), '번 포트에서 대기 중');
     });
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-    setTimeout(connectDB, 5000); // 재연결 시도 (5초 후)
-  }
-};
+  })
+  .catch((err) => console.error(err));
 
 mongoose.connection.on('error', (error) => {
   console.error('MongoDB connection error', error);
